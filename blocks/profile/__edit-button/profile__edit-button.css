@@ -3,6 +3,7 @@
   width: 24px;
   height: 24px;
   background: url("../../../images/profile-edit-button.svg") #000 center no-repeat;
+  background-size: 10px 10px;
   border: 1px solid #fff;
   transition: linear 0.4s;
   cursor: pointer;
@@ -16,5 +17,6 @@
   .profile__edit-button {
     width: 18px;
     height: 18px;
+    background-size: 7.5px 7.5px;
   }
 }

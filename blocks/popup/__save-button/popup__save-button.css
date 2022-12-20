@@ -12,7 +12,7 @@
   font-size: 18px;
   line-height: 1.2;
   font-weight: 400;
-  font-family: Inter; /*указано семейство шрифтов,т.к поля ввода не наследуют стили от родителя*/
+  font-family: 'Inter', Arial, sans-serif;; /*указано семейство шрифтов,т.к поля ввода не наследуют стили от родителя*/
   transition: linear 0.4s;
   cursor: pointer;
 }
