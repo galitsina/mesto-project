@@ -6,6 +6,7 @@
   background-size: 100% 100%;
   border: none;
   transition: linear 0.4s;
+  cursor: pointer;
 }
 
 .element__like-button:hover{

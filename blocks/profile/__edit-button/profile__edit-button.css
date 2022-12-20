@@ -5,6 +5,7 @@
   background: url("../../../images/profile-edit-button.svg") #000 center no-repeat;
   border: 1px solid #fff;
   transition: linear 0.4s;
+  cursor: pointer;
 }
 
 .profile__edit-button:hover{

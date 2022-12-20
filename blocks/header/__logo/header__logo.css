@@ -2,15 +2,17 @@
   margin: 0;
   padding: 0;
   padding-top: 45px;
-  padding-bottom: 41px;
+  padding-bottom: 37px;
   box-sizing: border-box;
   width: 142px;
+  object-fit: cover;
 }
 
 @media screen and (max-width: 1023px) {
   .header__logo {
     padding-left: 27px;
     padding-top: 28px;
-    padding-bottom: 31px;
+    padding-bottom: 27px;
+    width: 130px;
 }
 }

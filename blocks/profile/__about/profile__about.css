@@ -9,7 +9,7 @@
   row-gap: 16px;
   justify-items: start;
   align-items: center;
-}
+  }
 
 @media screen and (max-width: 1023px) {
   .profile__about {

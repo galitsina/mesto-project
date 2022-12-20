@@ -1,0 +1,36 @@
+.popup__input-item {
+  margin: 0 auto;
+  padding: 0;
+  margin-top: 30px;
+  padding-bottom: 13px;
+  box-sizing: border-box;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, .2);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+  font-family: Inter; /*указано семейство шрифтов,т.к поля ввода не наследуют стили от родителя*/
+}
+
+popup__input-item::-webkit-input-placeholder {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+popup__input-item::-moz-placeholder {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+popup__input-item::-ms-input-placeholder {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;}
+
+popup__input-item::placeholder {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;}
