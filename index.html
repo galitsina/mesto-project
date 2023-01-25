@@ -25,65 +25,44 @@
       </div>
       <button class="profile__add-button" type="button"></button>
     </section>
-    <section class="elements">
-      <figure class="element">
-        <img class="element__image" src="images/element-karachaevsk.jpg" alt="Крепость в Карачаево-Черкесии">
-        <figcaption class="element__caption">
-          <p class="element__title">Карачаево-Черкесия</p>
-          <button class="element__like-button" type="button"></button>
-        </figcaption>
-      </figure>
-      <figure class="element">
-        <img class="element__image" src="images/element-elbrus.jpg" alt="Гора Эльбрус на рассвете">
-        <figcaption class="element__caption">
-          <p class="element__title">Гора Эльбрус</p>
-          <button class="element__like-button" type="button"></button>
-        </figcaption>
-      </figure>
-      <figure class="element">
-        <img class="element__image" src="images/element-dombai.jpg" alt="Горы Домбая в пасмурную погоду">
-        <figcaption class="element__caption">
-          <p class="element__title">Домбай</p>
-          <button class=" element__like-button" type="button"></button>
-        </figcaption>
-      </figure>
-      <figure class="element">
-        <img class="element__image" src="images/element-elbrus.jpg" alt="Гора Эльбрус на рассвете">
-        <figcaption class="element__caption">
-          <p class="element__title">Гора Эльбрус</p>
-          <button class="element__like-button" type="button"></button>
-        </figcaption>
-      </figure>
-      <figure class="element">
-        <img class="element__image" src="images/element-dombai.jpg" alt="Горы Домбая в пасмурную погоду">
-        <figcaption class="element__caption">
-          <p class="element__title">Домбай</p>
-          <button class="element__like-button" type="button"></button>
-        </figcaption>
-      </figure>
-      <figure class="element">
-        <img class="element__image" src="images/element-karachaevsk.jpg" alt="Крепость в Карачаево-Черкесии">
-        <figcaption class="element__caption">
-          <p class="element__title">Карачаево-Черкесия</p>
-          <button class="element__like-button" type="button"></button>
-        </figcaption>
-      </figure>
+    <section class="elements" aria-label="Карточки с местами">
+
     </section>
   </main>
   <footer class="footer">
     <p class="footer__copyright">&copy; 2022 Mesto Russia</p>
   </footer>
-  <section class="popup">
+  <section class="popup popup_edit-form popup_add-form">
     <form class="popup__container" name="edit-profile">
       <button class="popup__close-icon" type="button"></button>
       <h2 class="popup__heading">Редактировать профиль</h2>
       <fieldset class="popup__input-container">
-        <input type="text" class="popup__input-item" id="profile-name" name="name" placeholder="" required>
-        <input type="text" class="popup__input-item" id="profile-about" name="about" placeholder="" required>
+        <input type="text" class="popup__input-item" id="name" name="name" placeholder="Введите свое имя" required>
+        <input type="text" class="popup__input-item" id="about" name="about" placeholder="О себе" required>
         <button class="popup__save-button" type="submit">Сохранить</button>
       </fieldset>
     </form>
   </section>
+  <section class="popup popup_open-image" aria-label="Открытое изображение">
+    <div class="popup__container-view">
+      <button class="popup__close-icon" type="button"></button>
+      <figure class="popup__view">
+        <img class="popup__view-image" src ="#" alt="">
+        <figcaption class="popup__view-caption"></figcaption>
+      </figure>
+    </div>
+  </section>
+  <template id="element-template">
+    <figure class="element">
+      <img class="element__image" alt="">
+      <figcaption class="element__caption">
+        <p class="element__title"></p>
+        <button class="element__like-button" type="button"></button>
+      </figcaption>
+      <button class="element__trash-button" type="button"></button>
+    </figure>
+
+  </template>
   <script src="script.js"></script>
 </body>
 

@@ -1,0 +1,9 @@
+.popup__view-caption {
+  margin: 0 auto;
+  padding: 0;
+  padding-top: 10px;
+  box-sizing: border-box;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.2;
+}
