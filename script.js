@@ -1,12 +1,12 @@
-const popup = document.querySelector('.popup');
-const formElement = popup.querySelector('.popup__container'); // Находим форму в DOM
-let editButton = document.querySelector('.profile__edit-button');
-let closeButton = formElement.querySelector('.popup__close-icon');
-let saveButton = formElement.querySelector('.popup__save-button');
-let addButton = document.querySelector('.profile__add-button');
-let popupHeading = formElement.querySelector('.popup__heading');
-
-
+const editPopup = document.querySelector('.popup_edit-form');
+const addPopup = document.querySelector('.popup_add-form');
+const imagePopup = document.querySelector('.popup_open-image');
+const formElement = document.querySelector('.popup__container'); // Находим форму в DOM
+const editButton = document.querySelector('.profile__edit-button');
+const closeButton = document.querySelectorAll('.popup__close-icon');
+const saveButton = formElement.querySelector('.popup__save-button');
+const addButton = document.querySelector('.profile__add-button');
+const popupHeading = formElement.querySelector('.popup__heading');
 const profileName = document.querySelector('.profile__name'); //имя профиля на странице
 const profileAbout = document.querySelector('.profile__bio'); //био профиля на странице
 const nameInput = formElement.querySelector('#name'); //1 поле редактирования в попапе
@@ -39,8 +39,13 @@ const initialCards = [
   }
 ];
 
+function openPopup(domElement) {
+  domElement.classList.add('popup_opened');
+}
+
+//функциональность открытия окна редактирования
 function editProfile() {
-  popup.classList.add('popup_opened');
+  openPopup(editPopup);
   nameInput.value = profileName.textContent; //в первое поле записываем значение имени на странице
   bioInput.value = profileAbout.textContent; //во второе поле записываем значение био на странице
   nameInput.placeholder = 'Введите свое имя';
@@ -48,59 +53,64 @@ function editProfile() {
   popupHeading.textContent = 'Редактировать профиль';
   saveButton.textContent = 'Сохранить';
 }
+editButton.addEventListener('click', editProfile);
 
+//функциональность открытия окна добавления карточки
 function addCard() {
-  popup.classList.add('popup_opened');
+  openPopup(addPopup);
   popupHeading.textContent = 'Новое место';
   nameInput.placeholder = 'Название';
   bioInput.placeholder = 'Ссылка на картинку';
   saveButton.textContent = 'Создать';
-}
-
-function closePopup() {
-  popup.classList.remove('popup_opened');
   nameInput.value = '';
   bioInput.value = '';
-  nameInput.placeholder = '';
-  bioInput.placeholder = '';
+}
+addButton.addEventListener('click', addCard);
+
+//функциональность закрытия окон
+function closePopup(domElement) {
+  domElement.classList.remove('popup_opened');
 }
 
-// Обработчик «отправки» формы, хотя пока она никуда отправляться не будет
+// Обработчик «отправки» формы, функциональность кнопок "Сохранить" и "Создать"
 function formSubmitHandler(evt) {
   // Эта строчка отменяет стандартную отправку формы, так мы можем определить свою логику отправки.
   evt.preventDefault();
-
-  console.log(`первоначальный текст с кнопки: ${saveButton.textContent}`);
-  console.log(saveButton.textContent === 'Сохранить');
   //условие для логики кнопки 'Cохранить', иначе для кнопки 'Создать'
   if (saveButton.textContent === 'Сохранить') {
     profileName.textContent = nameInput.value; //в значение имени на странице записываем значение из первого поля
     profileAbout.textContent = bioInput.value; //в значение био на странице записываем значение из второго поля
+    closePopup(editPopup); //при нажатии на кнопку "сохранить" закрываем попап
   } else {
     //добавляем карточку в дерево при нажатии кнопки 'Создать'
     const card = createCard(nameInput.value, bioInput.value);
     cards.prepend(card);
+    closePopup(addPopup); //при нажатии на кнопку "создать" закрываем попап
   }
-
-  closePopup() //при нажатии на кнопку "сохранить/создать" закрываем попап
 }
 
-editButton.addEventListener('click', editProfile);
+// Прикрепляем обработчик к форме, он будет следить за событием “submit” - «отправка»
+formElement.addEventListener('submit', formSubmitHandler);
 
-addButton.addEventListener('click', addCard);
+//обходим каждый элемент массива кнопок closeButton
+closeButton.forEach(function (item) {
+  //на каждый элемент вешаем слушатель клика с параметром, содержащим произошедшее событие
+  item.addEventListener('click', function (evt) {
+    //удалаяем класс открытого окна у родителя кнопки closeButton
+    evt.target.closest('.popup').classList.remove('popup_opened');
 
-closeButton.addEventListener('click', closePopup);
-
-formElement.addEventListener('submit', formSubmitHandler); // Прикрепляем обработчик к форме, он будет следить за событием “submit” - «отправка»
-
-
+  });
+});
 
 //функция создания карточки
 function createCard(name, link) {
   const cardTemplate = document.querySelector('#element-template').content;
   const card = cardTemplate.querySelector('.element').cloneNode(true);
   card.querySelector('.element__title').textContent = name;
-  card.querySelector('.element__image').src = link;
+  const cardImage = card.querySelector('.element__image');
+  cardImage.src = link;
+  cardImage.alt = name;
+
 
   //функциональность для лайка карточек
   const likeButton = card.querySelector('.element__like-button');
@@ -111,12 +121,21 @@ function createCard(name, link) {
   //функциональность удаления карточки
   const trashButton = card.querySelector('.element__trash-button');
   trashButton.addEventListener('click', function (evt) {
-    console.log(evt.target);
     evt.target.closest('.element').remove();
   });
 
-  return card;
+  //функциональность открытия попапа с картинкой
 
+  cardImage.addEventListener('click', function (evt) {
+    const openedImage = imagePopup.querySelector('.popup__view-image');
+    openedImage.src = evt.target.src;
+    const openedCaption = imagePopup.querySelector('.popup__view-caption');
+    openedCaption.textContent = evt.target.alt;
+    openedImage.alt = openedCaption.textContent;
+    openPopup(imagePopup);
+  });
+
+  return card;
 }
 
 const cards = document.querySelector('.elements'); //контейнер для всех карточек
@@ -126,6 +145,5 @@ for (let i = 0; i < initialCards.length; i++) {
   let card = createCard(initialCards[i].name, initialCards[i].link);
   cards.prepend(card);
 }
-
 
 
