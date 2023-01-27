@@ -2,7 +2,8 @@
   margin: 0;
   width: 22px;
   height: 19px;
-  background: url("../../../images/elements-like-disabled.svg") #fff center no-repeat;
+  background: url("../../../images/elements-like-disabled.svg") #fff center;
+  background-repeat: no-repeat;
   background-size: 100% 100%;
   border: none;
   transition: linear 0.4s;
