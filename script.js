@@ -1,3 +1,4 @@
+const popups = document.querySelectorAll('.popup');
 const editingProfilePopup = document.querySelector('.popup_edit-form');
 const addingCardPopup = document.querySelector('.popup_add-form');
 const imagePopup = document.querySelector('.popup_open-image');
@@ -36,8 +37,8 @@ editButton.addEventListener('click', openEditProfile);
 //функциональность открытия окна добавления карточки
 function openAddCard() {
   openPopup(addingCardPopup);
-  titleInput.value = '';
-  linkInput.value = '';
+  // titleInput.value = '';
+  // linkInput.value = '';
 }
 addButton.addEventListener('click', openAddCard);
 
@@ -48,6 +49,7 @@ function submitEditProfile(evt) {
   profileName.textContent = nameInput.value; //в значение имени на странице записываем значение из первого поля
   profileAbout.textContent = bioInput.value; //в значение био на странице записываем значение из второго поля
   closePopup(editingProfilePopup); //при нажатии на кнопку "сохранить" закрываем попап
+  document.forms.editprofile.reset();
 }
 editingProfilePopup.addEventListener('submit', submitEditProfile);
 
@@ -58,6 +60,7 @@ function submitAddCard(evt) {
   const card = createCard(titleInput.value, linkInput.value);
   cardsContainer.prepend(card);
   closePopup(addingCardPopup); //при нажатии на кнопку "создать" закрываем попап
+  document.forms.addcard.reset();
 }
 addingCardPopup.addEventListener('submit', submitAddCard);
 
@@ -65,8 +68,8 @@ addingCardPopup.addEventListener('submit', submitAddCard);
 closeButtons.forEach(function (item) {
   //на каждый элемент вешаем слушатель клика с параметром, содержащим произошедшее событие
   item.addEventListener('click', function (evt) {
-  //удалаяем класс открытого окна у родителя кнопки closeButtons
-  closePopup(evt.target.closest('.popup'));
+    //удалаяем класс открытого окна у родителя кнопки closeButtons
+    closePopup(evt.target.closest('.popup'));
   });
 });
 
@@ -106,3 +109,21 @@ for (let i = 0; i < initialCards.length; i++) {
   let card = createCard(initialCards[i].name, initialCards[i].link);
   cardsContainer.prepend(card);
 }
+
+//клик на оверлей - закрытие попапа
+popups.forEach(function (popup) {
+  popup.addEventListener('click', function (evt) {
+    if (evt.currentTarget === evt.target) {
+      closePopup(evt.currentTarget);
+    }
+  });
+});
+
+//нажатие на esc - закрытие попапа
+document.addEventListener('keydown', function (evt) {
+  if (evt.key === 'Escape') {
+    popups.forEach(function (popup) {
+      closePopup(popup);
+    });
+  }
+})
