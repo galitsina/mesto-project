@@ -15,6 +15,14 @@ const cardTemplate = document.querySelector('#element-template').content;
 const openedImage = imagePopup.querySelector('.popup__view-image');
 const openedCaption = imagePopup.querySelector('.popup__view-caption');
 const cardsContainer = document.querySelector('.elements'); //контейнер для всех карточек
+const validationConfig = {
+  formSelector: '.popup__input-container',
+  inputSelector: '.popup__input-item',
+  submitButtonSelector: '.popup__save-button',
+  inactiveButtonClass: 'popup__save-button_inactive',
+  inputErrorClass: 'popup__input-item_type_error',
+  errorClass: 'popup__input-item-error_active'
+};
 
 //функциональность открытия окон
 function openPopup(domElement) {
@@ -24,6 +32,14 @@ function openPopup(domElement) {
 //функциональность закрытия окон
 function closePopup(domElement) {
   domElement.classList.remove('popup_opened');
+  const popupForm = domElement.querySelector(validationConfig.formSelector);
+  if (popupForm !== null) {
+    popupForm.reset();
+    const formInputs = popupForm.querySelectorAll(validationConfig.inputSelector);
+    formInputs.forEach(function (inputElement) {
+      hideInputError(popupForm, inputElement, validationConfig);
+    });
+  }
 }
 
 //функциональность открытия окна редактирования
@@ -31,6 +47,9 @@ function openEditProfile() {
   openPopup(editingProfilePopup);
   nameInput.value = profileName.textContent; //в первое поле записываем значение имени на странице
   bioInput.value = profileAbout.textContent; //во второе поле записываем значение био на странице
+  const formInputs = Array.from(editingProfilePopup.querySelectorAll(validationConfig.inputSelector));
+  const formButton = editingProfilePopup.querySelector(validationConfig.submitButtonSelector);
+  toggleButtonState(formInputs, formButton, validationConfig);
 }
 editButton.addEventListener('click', openEditProfile);
 
@@ -49,7 +68,6 @@ function submitEditProfile(evt) {
   profileName.textContent = nameInput.value; //в значение имени на странице записываем значение из первого поля
   profileAbout.textContent = bioInput.value; //в значение био на странице записываем значение из второго поля
   closePopup(editingProfilePopup); //при нажатии на кнопку "сохранить" закрываем попап
-  document.forms.editprofile.reset();
 }
 editingProfilePopup.addEventListener('submit', submitEditProfile);
 
@@ -60,7 +78,6 @@ function submitAddCard(evt) {
   const card = createCard(titleInput.value, linkInput.value);
   cardsContainer.prepend(card);
   closePopup(addingCardPopup); //при нажатии на кнопку "создать" закрываем попап
-  document.forms.addcard.reset();
 }
 addingCardPopup.addEventListener('submit', submitAddCard);
 
@@ -71,6 +88,7 @@ closeButtons.forEach(function (item) {
     //удалаяем класс открытого окна у родителя кнопки closeButtons
     closePopup(evt.target.closest('.popup'));
   });
+
 });
 
 //функция создания карточки
@@ -127,3 +145,69 @@ document.addEventListener('keydown', function (evt) {
     });
   }
 })
+
+//валидация
+function showInputError(formElement, inputElement, errorMesage, config) {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+  inputElement.classList.add(config.inputErrorClass);
+  errorElement.textContent = errorMesage;
+  errorElement.classList.add(config.errorClass);
+}
+
+function hideInputError(formElement, inputElement, config) {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+  inputElement.classList.remove(config.inputErrorClass);
+  errorElement.classList.remove(config.errorClass);
+  errorElement.textContent = '';
+}
+
+function checkInputValidity(formElement, inputElement, config) {
+  if (inputElement.validity.patternMismatch) {
+    inputElement.setCustomValidity(inputElement.dataset.errorMessage);
+  } else {
+    inputElement.setCustomValidity("");
+  }
+
+  if (!inputElement.validity.valid) {
+    showInputError(formElement, inputElement, inputElement.validationMessage, config)
+  } else {
+    hideInputError(formElement, inputElement, config)
+  }
+}
+
+function hasInvalidInput(inputs) {
+  return inputs.some(function (inputElement) {
+    return !inputElement.validity.valid;
+  });
+}
+
+function toggleButtonState(inputs, buttonElement, config) {
+  if (hasInvalidInput(inputs)) {
+    buttonElement.classList.add(config.inactiveButtonClass);
+    buttonElement.disabled = true;
+  } else {
+    buttonElement.classList.remove(config.inactiveButtonClass);
+    buttonElement.disabled = false;
+  }
+}
+
+function setEventListener(formElement, config) {
+  const inputs = Array.from(formElement.querySelectorAll(config.inputSelector));
+  const buttonElement = formElement.querySelector(config.submitButtonSelector);
+  toggleButtonState(inputs, buttonElement, config);
+  inputs.forEach(function (inputElement) {
+    inputElement.addEventListener('input', function () {
+      checkInputValidity(formElement, inputElement,config);
+      toggleButtonState(inputs, buttonElement, config);
+    });
+  });
+}
+
+function enableValidation(config) {
+  const forms = Array.from(document.querySelectorAll(config.formSelector));
+  forms.forEach(function (formElement) {
+    setEventListener(formElement, config);
+  });
+}
+
+enableValidation(validationConfig);
