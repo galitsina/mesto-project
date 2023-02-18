@@ -14,6 +14,7 @@ const linkInput = addingCardPopup.querySelector('#link'); //2 поле реда�
 //функциональность открытия окон
 export function openPopup(domElement) {
   domElement.classList.add('popup_opened');
+  document.addEventListener('keydown', closePopupWhenEsc);
 }
 
 //функциональность закрытия окон
@@ -27,6 +28,7 @@ export function closePopup(domElement) {
       hideInputError(popupForm, inputElement, validationConfig);
     });
   }
+  document.removeEventListener('keydown', closePopupWhenEsc);
 }
 
 //функциональность открытия окна редактирования
@@ -82,13 +84,12 @@ export function initPopupCloseListeners(closeButtonSelector, popupSelector) {
       }
     });
   });
+}
 
-  //нажатие на esc - закрытие попапа
-  document.addEventListener('keydown', function (evt) {
-    if (evt.key === 'Escape') {
-      popups.forEach(function (popup) {
-        closePopup(popup);
-      });
-    }
-  })
+//нажатие на esc - закрытие попапа
+function closePopupWhenEsc(evt) {
+  if (evt.key === 'Escape') {
+    const anyOpenedPopup = document.querySelector('.popup_opened');
+    closePopup(anyOpenedPopup);
+  }
 }
