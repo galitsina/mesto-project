@@ -10,6 +10,10 @@ const nameInput = editingProfilePopup.querySelector('#name'); //1 поле ре�
 const bioInput = editingProfilePopup.querySelector('#about'); //2 поле редактирования в попапе редактирования
 const titleInput = addingCardPopup.querySelector('#title'); //1 поле редактирования в попапе создания
 const linkInput = addingCardPopup.querySelector('#link'); //2 поле редактирования в попапе создания
+const editingFormInputs = Array.from(editingProfilePopup.querySelectorAll(validationConfig.inputSelector));
+const editingFormButton = editingProfilePopup.querySelector(validationConfig.submitButtonSelector);
+const addingFormInputs = Array.from(addingCardPopup.querySelectorAll(validationConfig.inputSelector));
+const addingFormButton = addingCardPopup.querySelector(validationConfig.submitButtonSelector);
 
 //функциональность открытия окон
 export function openPopup(domElement) {
@@ -17,9 +21,7 @@ export function openPopup(domElement) {
   document.addEventListener('keydown', closePopupWhenEsc);
 }
 
-//функциональность закрытия окон
-export function closePopup(domElement) {
-  domElement.classList.remove('popup_opened');
+function resetFormInPopup (domElement) {
   const popupForm = domElement.querySelector(validationConfig.formSelector);
   if (popupForm !== null) {
     popupForm.reset();
@@ -28,6 +30,11 @@ export function closePopup(domElement) {
       hideInputError(popupForm, inputElement, validationConfig);
     });
   }
+}
+
+//функциональность закрытия окон
+export function closePopup(domElement) {
+  domElement.classList.remove('popup_opened');
   document.removeEventListener('keydown', closePopupWhenEsc);
 }
 
@@ -36,9 +43,7 @@ export function openEditProfile() {
   openPopup(editingProfilePopup);
   nameInput.value = profileName.textContent; //в первое поле записываем значение имени на странице
   bioInput.value = profileAbout.textContent; //во второе поле записываем значение био на странице
-  const formInputs = Array.from(editingProfilePopup.querySelectorAll(validationConfig.inputSelector));
-  const formButton = editingProfilePopup.querySelector(validationConfig.submitButtonSelector);
-  toggleButtonState(formInputs, formButton, validationConfig);
+  toggleButtonState(editingFormInputs, editingFormButton, validationConfig);
 }
 
 //функциональность открытия окна добавления карточки
@@ -62,6 +67,8 @@ export function submitAddCard(evt) {
   const card = createCard(titleInput.value, linkInput.value);
   cardsContainer.prepend(card);
   closePopup(addingCardPopup); //при нажатии на кнопку "создать" закрываем попап
+  toggleButtonState(addingFormInputs, addingFormButton, validationConfig); //кнопка становится неактивной при пустых полях
+  resetFormInPopup(addingCardPopup);
 }
 
 export function initPopupCloseListeners(closeButtonSelector, popupSelector) {
@@ -71,8 +78,10 @@ export function initPopupCloseListeners(closeButtonSelector, popupSelector) {
   closeButtons.forEach(function (item) {
     //на каждый элемент вешаем слушатель клика с параметром, содержащим произошедшее событие
     item.addEventListener('click', function (evt) {
+      const parentPopup = evt.target.closest(popupSelector);
       //удалаяем класс открытого окна у родителя кнопки closeButtons
-      closePopup(evt.target.closest(popupSelector));
+      closePopup(parentPopup);
+      resetFormInPopup(parentPopup);
     });
   });
 
@@ -81,6 +90,7 @@ export function initPopupCloseListeners(closeButtonSelector, popupSelector) {
     popup.addEventListener('click', function (evt) {
       if (evt.currentTarget === evt.target) {
         closePopup(evt.currentTarget);
+        resetFormInPopup(evt.currentTarget);
       }
     });
   });
@@ -91,5 +101,6 @@ function closePopupWhenEsc(evt) {
   if (evt.key === 'Escape') {
     const anyOpenedPopup = document.querySelector('.popup_opened');
     closePopup(anyOpenedPopup);
+    resetFormInPopup(anyOpenedPopup);
   }
 }
