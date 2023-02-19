@@ -21,7 +21,8 @@ export function openPopup(domElement) {
   document.addEventListener('keydown', closePopupWhenEsc);
 }
 
-function resetFormInPopup (domElement) {
+//функциональность cброса инпутов
+function resetFormInPopup(domElement) {
   const popupForm = domElement.querySelector(validationConfig.formSelector);
   if (popupForm !== null) {
     popupForm.reset();
@@ -40,6 +41,7 @@ export function closePopup(domElement) {
 
 //функциональность открытия окна редактирования
 export function openEditProfile() {
+  resetFormInPopup(editingProfilePopup);
   openPopup(editingProfilePopup);
   nameInput.value = profileName.textContent; //в первое поле записываем значение имени на странице
   bioInput.value = profileAbout.textContent; //во второе поле записываем значение био на странице
@@ -48,6 +50,8 @@ export function openEditProfile() {
 
 //функциональность открытия окна добавления карточки
 export function openAddCard() {
+  resetFormInPopup(addingCardPopup);
+  toggleButtonState(addingFormInputs, addingFormButton, validationConfig); //кнопка становится неактивной при пустых полях
   openPopup(addingCardPopup);
 }
 
@@ -67,8 +71,6 @@ export function submitAddCard(evt) {
   const card = createCard(titleInput.value, linkInput.value);
   cardsContainer.prepend(card);
   closePopup(addingCardPopup); //при нажатии на кнопку "создать" закрываем попап
-  toggleButtonState(addingFormInputs, addingFormButton, validationConfig); //кнопка становится неактивной при пустых полях
-  resetFormInPopup(addingCardPopup);
 }
 
 export function initPopupCloseListeners(closeButtonSelector, popupSelector) {
@@ -81,7 +83,6 @@ export function initPopupCloseListeners(closeButtonSelector, popupSelector) {
       const parentPopup = evt.target.closest(popupSelector);
       //удалаяем класс открытого окна у родителя кнопки closeButtons
       closePopup(parentPopup);
-      resetFormInPopup(parentPopup);
     });
   });
 
@@ -90,7 +91,6 @@ export function initPopupCloseListeners(closeButtonSelector, popupSelector) {
     popup.addEventListener('click', function (evt) {
       if (evt.currentTarget === evt.target) {
         closePopup(evt.currentTarget);
-        resetFormInPopup(evt.currentTarget);
       }
     });
   });
@@ -101,6 +101,5 @@ function closePopupWhenEsc(evt) {
   if (evt.key === 'Escape') {
     const anyOpenedPopup = document.querySelector('.popup_opened');
     closePopup(anyOpenedPopup);
-    resetFormInPopup(anyOpenedPopup);
   }
 }
