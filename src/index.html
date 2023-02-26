@@ -16,6 +16,7 @@
     <section class="profile">
       <div class="profile__info">
         <img class="profile__avatar" src="<%=require('./images/profile-avatar.jpg')%>" alt="Аватар пользователя">
+        <button class="profile__avatar-overlay"></button>
         <div class="profile__about">
           <h1 class="profile__name">Жак-Ив Кусто</h1>
           <button class="profile__edit-button" type="button"></button>
@@ -38,13 +39,13 @@
       <form class="popup__input-container" name="editprofile" novalidate>
         <label class="popup__field">
           <input type="text" class="popup__input-item" id="name" name="name" placeholder="Введите свое имя"
-            minlength="2" maxlength="40" pattern="^[a-zA-Zа-яА-Я\- ]+$"
+            minlength="2" maxlength="40" pattern="^[a-zA-Zа-яА-ЯёЁ\- ]+$"
             data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы" required>
           <span class="popup__input-item-error name-error"></span>
         </label>
         <label class="popup__field">
           <input type="text" class="popup__input-item" id="about" name="about" placeholder="О себе" minlength="2"
-            maxlength="200" pattern="^[a-zA-Zа-яА-Я\- ]+$"
+            maxlength="200" pattern="^[a-zA-Zа-яА-ЯёЁ\- ]+$"
             data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы" required>
           <span class="popup__input-item-error about-error"></span>
         </label>
@@ -59,7 +60,7 @@
       <form class="popup__input-container" name="addcard" novalidate>
         <label class="popup__field">
           <input type="text" class="popup__input-item" id="title" name="title" placeholder="Название" minlength="2"
-            maxlength="30" pattern="^[a-zA-Zа-яА-Я\- ]+$"
+            maxlength="30" pattern="^[a-zA-Zа-яА-ЯёЁ\- ]+$"
             data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы" required>
           <span class="popup__input-item-error title-error"></span>
         </label>
@@ -85,7 +86,10 @@
       <img class="element__image" alt="">
       <figcaption class="element__caption">
         <p class="element__title"></p>
-        <button class="element__like-button" type="button"></button>
+        <div class="element__like">
+          <button class="element__like-button" type="button"></button>
+          <p class="element__like-counter">2</p>
+        </div>
       </figcaption>
       <button class="element__trash-button" type="button"></button>
     </figure>

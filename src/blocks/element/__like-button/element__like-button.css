@@ -1,5 +1,8 @@
 .element__like-button {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  display: block;
   width: 22px;
   height: 19px;
   background: url("../../../images/elements-like-disabled.svg") #fff center no-repeat;
