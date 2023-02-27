@@ -72,6 +72,24 @@
       </form>
     </div>
   </section>
+
+
+  <section class="popup popup_edit-avatar">
+    <div class="popup__container">
+      <button class="popup__close-icon" type="button"></button>
+      <h2 class="popup__heading">Обновить аватар</h2>
+      <form class="popup__input-container" name="editavatar" novalidate>
+        <label class="popup__field">
+          <input type="url" class="popup__input-item" id="avatarlink" name="avatarlink" placeholder="Ссылка на картинку" required>
+          <span class="popup__input-item-error avatarlink-error"></span>
+        </label>
+        <button class="popup__save-button" type="submit">Сохранить</button>
+      </form>
+    </div>
+  </section>
+
+
+
   <section class="popup popup_opacity popup_open-image" aria-label="Открытое изображение">
     <div class="popup__container-view">
       <button class="popup__close-icon" type="button"></button>
