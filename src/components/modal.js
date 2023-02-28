@@ -1,7 +1,7 @@
 import { cardsContainer, hideInputError, validationConfig } from './utils.js';
 import { createCard } from './cards.js';
 import { toggleButtonState } from './validate.js';
-import { editAvatar } from './api.js';
+import { editAvatar, postCard, editProfile } from './api.js';
 
 export const editingProfilePopup = document.querySelector('.popup_edit-form');
 export const addingCardPopup = document.querySelector('.popup_add-form');
@@ -72,18 +72,36 @@ export function openEditAvatar() {
 export function submitEditProfile(evt) {
   // Эта строчка отменяет стандартную отправку формы, так мы можем определить свою логику отправки.
   evt.preventDefault();
-  profileName.textContent = nameInput.value; //в значение имени на странице записываем значение из первого поля
-  profileAbout.textContent = bioInput.value; //в значение био на странице записываем значение из второго поля
-  closePopup(editingProfilePopup); //при нажатии на кнопку "сохранить" закрываем попап
+  changeButtonText(editingFormButton, 'Сохранение...');
+  editProfile (nameInput.value, bioInput.value).then((user) => {
+    profileName.textContent = user.name; //в значение имени на странице записываем значение из первого поля
+    profileAbout.textContent = user.about; //в значение био на странице записываем значение из второго поля
+  })
+  .catch((err) => {
+    console.log(err);
+  })
+  .finally((res) => {
+    changeButtonText(editingFormButton, 'Сохранить');
+    closePopup(editingProfilePopup); //при нажатии на кнопку "сохранить" закрываем попап
+  })
 }
 
 // Обработчик «отправки» формы создания карточки
 export function submitAddCard(evt) {
   evt.preventDefault();
-  //добавляем карточку в дерево при нажатии кнопки 'Создать'
-  const card = createCard(titleInput.value, linkInput.value);
-  cardsContainer.prepend(card);
-  closePopup(addingCardPopup); //при нажатии на кнопку "создать" закрываем попап
+  changeButtonText(addingFormButton, 'Создание...');
+  postCard(titleInput.value, linkInput.value).then((card) => {
+    //добавляем карточку в дерево при нажатии кнопки 'Создать'
+    const domCard = createCard(card);
+    cardsContainer.prepend(domCard);
+  })
+  .catch((err) => {
+    console.log(err);
+  })
+  .finally((res) => {
+    changeButtonText(addingFormButton, 'Создать');
+    closePopup(addingCardPopup); //при нажатии на кнопку "создать" закрываем попап
+  })
 }
 
 //Изменение текста на кнопки при отправке данных на сервер, принимает 2 параметра,т.к нужны 2 разных текста (сохранение, создание)
