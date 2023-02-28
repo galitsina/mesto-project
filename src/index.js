@@ -1,24 +1,55 @@
 import './pages/index.css';
 import { enableValidation } from './components/validate.js';
 import { loadInitialCards } from './components/cards.js';
-import { openAddCard, submitEditProfile, submitAddCard, openEditProfile, initPopupCloseListeners, editingProfilePopup, addingCardPopup } from './components/modal.js';
+import { openAddCard, submitEditProfile, submitAddCard, openEditProfile, initPopupCloseListeners, editingProfilePopup, addingCardPopup, openEditAvatar, submitEditAvatar, editingAvatarPopup, profileName, profileAbout, avatar } from './components/modal.js';
 import { validationConfig } from './components/utils.js';
+import { getUserInformation } from './components/api.js';
 
 const editButton = document.querySelector('.profile__edit-button');
 const addButton = document.querySelector('.profile__add-button');
+const editAvatarButton = document.querySelector('.profile__avatar-overlay');
 const popupSelector = '.popup';
 const closeButtonSelector = '.popup__close-icon';
+
+getUserInformation()
+  .then ((res) => {
+    profileName.textContent = res.name;
+    profileAbout.textContent = res.about;
+    avatar.src = res.avatar;
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 editButton.addEventListener('click', openEditProfile);
 
 addButton.addEventListener('click', openAddCard);
 
+editAvatarButton.addEventListener('click', openEditAvatar);
+
 editingProfilePopup.addEventListener('submit', submitEditProfile);
 
 addingCardPopup.addEventListener('submit', submitAddCard);
+
+editingAvatarPopup.addEventListener('submit', submitEditAvatar);
 
 loadInitialCards();
 
 initPopupCloseListeners(closeButtonSelector, popupSelector);
 
 enableValidation(validationConfig);
+
+function test() {
+  fetch('https://nomoreparties.co/v1/plus-cohort-21/cards', {
+    headers: {
+      authorization: 'ec7ecd53-86da-44fb-8b34-fdbecdd673ff'
+    }
+  })
+    .then(res => res.json())
+    .then((result) => {
+      console.log(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
