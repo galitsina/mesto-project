@@ -76,13 +76,13 @@ export function submitEditProfile(evt) {
   editProfile (nameInput.value, bioInput.value).then((user) => {
     profileName.textContent = user.name; //в значение имени на странице записываем значение из первого поля
     profileAbout.textContent = user.about; //в значение био на странице записываем значение из второго поля
+    closePopup(editingProfilePopup); //при нажатии на кнопку "сохранить" закрываем попап
   })
   .catch((err) => {
     console.log(err);
   })
   .finally((res) => {
     changeButtonText(editingFormButton, 'Сохранить');
-    closePopup(editingProfilePopup); //при нажатии на кнопку "сохранить" закрываем попап
   })
 }
 
@@ -94,13 +94,13 @@ export function submitAddCard(evt) {
     //добавляем карточку в дерево при нажатии кнопки 'Создать'
     const domCard = createCard(card);
     cardsContainer.prepend(domCard);
+    closePopup(addingCardPopup); //при нажатии на кнопку "создать" закрываем попап
   })
   .catch((err) => {
     console.log(err);
   })
   .finally((res) => {
     changeButtonText(addingFormButton, 'Создать');
-    closePopup(addingCardPopup); //при нажатии на кнопку "создать" закрываем попап
   })
 }
 
@@ -115,6 +115,7 @@ export function submitEditAvatar(evt) {
   changeButtonText(editingAvatarButton, 'Сохранение...');
   editAvatar(avatarLinkInput.value).then((profile) => {
     avatar.src = profile.avatar;
+    closePopup(editingAvatarPopup); //при нажатии на кнопку закрываем попап
   })
     .catch((err) => {
       console.log(err);
@@ -122,7 +123,6 @@ export function submitEditAvatar(evt) {
     .finally((res) => {
       changeButtonText(editingAvatarButton, 'Сохранить');
     })
-  closePopup(editingAvatarPopup); //при нажатии на кнопку закрываем попап
 }
 
 export function initPopupCloseListeners(closeButtonSelector, popupSelector) {

@@ -1,5 +1,5 @@
 import { cardsContainer } from './utils.js';
-import { openPopup } from './modal.js';
+import { openPopup, profileName, profileAbout, avatar } from './modal.js';
 import { getCards, putLike, deleteLike, getUserInformation, deleteCard } from './api.js';
 
 const cardTemplate = document.querySelector('#element-template').content;
@@ -84,6 +84,9 @@ export function loadInitialCards() {
       const cardsArray = promises[0];
       const userInformation = promises[1];
       userId = userInformation._id;
+      profileName.textContent = userInformation.name;
+      profileAbout.textContent = userInformation.about;
+      avatar.src = userInformation.avatar;
       //получаем массив карточек от сервера
       for (let i = 0; i < cardsArray.length; i++) {
         let domCard = createCard(cardsArray[i]);
@@ -93,9 +96,6 @@ export function loadInitialCards() {
     .catch((err) => {
       console.log(err);
     });
-
-
-
 }
 
 //const initialCards = [

@@ -6,6 +6,7 @@ export function hideInputError(formElement, inputElement, config) {
   errorElement.classList.remove(config.errorClass);
   errorElement.textContent = '';
 }
+
 export const validationConfig = {
   formSelector: '.popup__input-container',
   inputSelector: '.popup__input-item',
@@ -14,3 +15,10 @@ export const validationConfig = {
   inputErrorClass: 'popup__input-item_type_error',
   errorClass: 'popup__input-item-error_active'
 };
+
+export function checkResponse(res) {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(`Что-то пошло не так: ${res.status}`);
+}
