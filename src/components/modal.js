@@ -27,18 +27,6 @@ export function openPopup(domElement) {
   document.addEventListener('keydown', closePopupWhenEsc);
 }
 
-//функциональность cброса инпутов
-function resetFormInPopup(domElement) {
-  const popupForm = domElement.querySelector(validationConfig.formSelector);
-  if (popupForm !== null) {
-    popupForm.reset();
-    const formInputs = popupForm.querySelectorAll(validationConfig.inputSelector);
-    formInputs.forEach(function (inputElement) {
-      hideInputError(popupForm, inputElement, validationConfig);
-    });
-  }
-}
-
 //функциональность закрытия окон
 export function closePopup(domElement) {
   domElement.classList.remove('popup_opened');
@@ -47,7 +35,6 @@ export function closePopup(domElement) {
 
 //функциональность открытия окна редактирования
 export function openEditProfile() {
-  resetFormInPopup(editingProfilePopup);
   openPopup(editingProfilePopup);
   nameInput.value = profileName.textContent; //в первое поле записываем значение имени на странице
   bioInput.value = profileAbout.textContent; //во второе поле записываем значение био на странице
@@ -56,73 +43,89 @@ export function openEditProfile() {
 
 //функциональность открытия окна добавления карточки
 export function openAddCard() {
-  resetFormInPopup(addingCardPopup);
   toggleButtonState(addingFormInputs, addingFormButton, validationConfig); //кнопка становится неактивной при пустых полях
   openPopup(addingCardPopup);
 }
 
 //функциональность открытия окна редактирования аватара
 export function openEditAvatar() {
-  resetFormInPopup(editingAvatarPopup);
   toggleButtonState(editingAvatarInput, editingAvatarButton, validationConfig); //кнопка становится неактивной при пустых полях
   openPopup(editingAvatarPopup);
 }
 
+//функция управления текстом кнопки
+function renderLoading(isLoading, button, buttonText = 'Сохранить', loadingText = 'Сохранение...') {
+  if (isLoading) {
+    button.textContent = loadingText;
+  } else {
+    button.textContent = buttonText;
+  }
+}
+
+//функция, которая принимает функцию запроса, объект события и текст во время загрузки
+function handleSubmit(request, evt, loadingText = 'Сохранение...') {
+  // Отменяем стандартную отправку формы, предотвращаем перезагрузку формы при сабмите
+  evt.preventDefault();
+  // универсально получаем кнопку сабмита из `evt`
+  const submitButton = evt.submitter;
+  // записываем начальный текст кнопки до вызова запроса
+  const initialText = submitButton.textContent;
+  // изменяем текст кнопки до вызова запроса
+  renderLoading(true, submitButton, initialText, loadingText);
+  request()
+    .then(() => {
+      // очищаем форму после успешного ответа от сервера
+      // а так же `reset` может запустить деактивацию кнопки сабмита
+      evt.target.reset();
+      const formInputs = evt.target.querySelectorAll(validationConfig.inputSelector);
+      formInputs.forEach(function (inputElement) {
+        hideInputError(evt.target, inputElement, validationConfig);
+      })
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`);
+    })
+    // возвращаем обратно начальный текст кнопки
+    .finally(() => {
+      renderLoading(false, submitButton, initialText);
+    });
+}
+
 // Обработчик «отправки» формы редактирования профиля
 export function submitEditProfile(evt) {
-  // Эта строчка отменяет стандартную отправку формы, так мы можем определить свою логику отправки.
-  evt.preventDefault();
-  changeButtonText(editingFormButton, 'Сохранение...');
-  editProfile (nameInput.value, bioInput.value).then((user) => {
-    profileName.textContent = user.name; //в значение имени на странице записываем значение из первого поля
-    profileAbout.textContent = user.about; //в значение био на странице записываем значение из второго поля
-    closePopup(editingProfilePopup); //при нажатии на кнопку "сохранить" закрываем попап
-  })
-  .catch((err) => {
-    console.log(err);
-  })
-  .finally((res) => {
-    changeButtonText(editingFormButton, 'Сохранить');
-  })
+  function makeRequest() {
+    return editProfile(nameInput.value, bioInput.value).then((user) => {
+      profileName.textContent = user.name; //в значение имени на странице записываем значение из первого поля
+      profileAbout.textContent = user.about; //в значение био на странице записываем значение из второго поля
+      closePopup(editingProfilePopup); //при нажатии на кнопку "сохранить" закрываем попап
+    })
+  }
+  handleSubmit(makeRequest, evt, 'Сохранение...')
 }
 
 // Обработчик «отправки» формы создания карточки
 export function submitAddCard(evt) {
-  evt.preventDefault();
-  changeButtonText(addingFormButton, 'Создание...');
-  postCard(titleInput.value, linkInput.value).then((card) => {
-    //добавляем карточку в дерево при нажатии кнопки 'Создать'
-    const domCard = createCard(card);
-    cardsContainer.prepend(domCard);
-    closePopup(addingCardPopup); //при нажатии на кнопку "создать" закрываем попап
-  })
-  .catch((err) => {
-    console.log(err);
-  })
-  .finally((res) => {
-    changeButtonText(addingFormButton, 'Создать');
-  })
-}
-
-//Изменение текста на кнопки при отправке данных на сервер, принимает 2 параметра,т.к нужны 2 разных текста (сохранение, создание)
-function changeButtonText(button, buttonText) {
-  button.textContent = buttonText;
+  function makeRequest() {
+    return postCard(titleInput.value, linkInput.value).then((card) => {
+      //добавляем карточку в дерево при нажатии кнопки 'Создать'
+      const domCard = createCard(card);
+      cardsContainer.prepend(domCard);
+      closePopup(addingCardPopup); //при нажатии на кнопку "создать" закрываем попап
+    })
+  }
+  handleSubmit(makeRequest, evt, 'Создание...')
 }
 
 //Обработчик «отправки» формы редактирования аватара
 export function submitEditAvatar(evt) {
-  evt.preventDefault();
-  changeButtonText(editingAvatarButton, 'Сохранение...');
-  editAvatar(avatarLinkInput.value).then((profile) => {
-    avatar.src = profile.avatar;
-    closePopup(editingAvatarPopup); //при нажатии на кнопку закрываем попап
-  })
-    .catch((err) => {
-      console.log(err);
+
+  function makeRequest() {
+    return editAvatar(avatarLinkInput.value).then((profile) => {
+      avatar.src = profile.avatar;
+      closePopup(editingAvatarPopup); //при нажатии на кнопку закрываем попап
     })
-    .finally((res) => {
-      changeButtonText(editingAvatarButton, 'Сохранить');
-    })
+  }
+  handleSubmit(makeRequest, evt, 'Сохранение...')
 }
 
 export function initPopupCloseListeners(closeButtonSelector, popupSelector) {
