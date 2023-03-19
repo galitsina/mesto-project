@@ -1,12 +1,21 @@
 import { cardsContainer } from './utils.js';
 import { openPopup, profileName, profileAbout, avatar } from './modal.js';
 import { getCards, putLike, deleteLike, getUserInformation, deleteCard } from './api.js';
+import { Api } from './api.js';
 
 const cardTemplate = document.querySelector('#element-template').content;
 const imagePopup = document.querySelector('.popup_open-image');
 const openedImage = imagePopup.querySelector('.popup__view-image');
 const openedCaption = imagePopup.querySelector('.popup__view-caption');
 let userId;
+export const api = new Api ({
+  baseUrl: 'https://nomoreparties.co/v1/plus-cohort-21',
+  headers: {
+    authorization: 'ec7ecd53-86da-44fb-8b34-fdbecdd673ff',
+    'Content-Type': 'application/json'
+  }
+})
+
 
 //функция создания карточки
 export function createCard(card) {
@@ -34,7 +43,7 @@ export function createCard(card) {
 
   likeButton.addEventListener('click', function (evt) {
     if (evt.target.classList.contains('element__like-button_active')) {
-      deleteLike(card._id).then((res) => {
+      api.deleteLike(card._id).then((res) => {
         domLike.textContent = res.likes.length;
         evt.target.classList.remove('element__like-button_active');
       })
@@ -42,7 +51,7 @@ export function createCard(card) {
           console.log(err);
         })
     } else {
-      putLike(card._id).then((res) => {
+      api.putLike(card._id).then((res) => {
         domLike.textContent = res.likes.length;
         evt.target.classList.add('element__like-button_active');
       })
@@ -55,7 +64,7 @@ export function createCard(card) {
   //функциональность удаления карточки
   const trashButton = domCard.querySelector('.element__trash-button');
   trashButton.addEventListener('click', function (evt) {
-    deleteCard(card._id).then((card) => {
+    api.deleteCard(card._id).then((card) => {
       evt.target.closest('.element').remove();
     })
       .catch((err) => {
@@ -79,7 +88,7 @@ export function createCard(card) {
 
 //функция добавления карточек
 export function loadInitialCards() {
-  Promise.all([getCards(), getUserInformation()])
+  Promise.all([api.getCards(), api.getUserInformation()])
     .then((promises) => {
       const cardsArray = promises[0];
       const userInformation = promises[1];
@@ -98,29 +107,3 @@ export function loadInitialCards() {
     });
 }
 
-//const initialCards = [
-  //   {
-  //     name: 'Гронинген',
-  //     link: 'https://images.unsplash.com/photo-1616321741705-e9a4073af35c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3120&q=80'
-  //   },
-  //   {
-  //     name: 'Волендам',
-  //     link: 'https://images.unsplash.com/photo-1609875103184-cba8296a5220?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=869&q=80'
-  //   },
-  //   {
-  //     name: 'Амстердам',
-  //     link: 'https://images.unsplash.com/photo-1618333302170-d7bbc76188da?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80'
-  //   },
-  //   {
-  //     name: 'Доесбург',
-  //     link: 'https://images.unsplash.com/photo-1627496143655-285ccb0e938f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80'
-  //   },
-  //   {
-  //     name: 'Амеланд',
-  //     link: 'https://images.unsplash.com/photo-1621583706700-eb7904e5d286?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80'
-  //   },
-  //   {
-  //     name: 'Утрехт',
-  //     link: 'https://images.unsplash.com/photo-1656977711959-47776bfec276?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1313&q=80'
-  //   }
-  // ];

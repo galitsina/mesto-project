@@ -2,6 +2,7 @@ import { cardsContainer, hideInputError, validationConfig } from './utils.js';
 import { createCard } from './cards.js';
 import { toggleButtonState } from './validate.js';
 import { editAvatar, postCard, editProfile } from './api.js';
+import { Api } from './api.js';
 
 export const editingProfilePopup = document.querySelector('.popup_edit-form');
 export const addingCardPopup = document.querySelector('.popup_add-form');
@@ -20,6 +21,13 @@ const addingFormInputs = Array.from(addingCardPopup.querySelectorAll(validationC
 const addingFormButton = addingCardPopup.querySelector(validationConfig.submitButtonSelector);
 const editingAvatarInput = Array.from(editingAvatarPopup.querySelectorAll(validationConfig.inputSelector));
 const editingAvatarButton = editingAvatarPopup.querySelector(validationConfig.submitButtonSelector);
+const api = new Api ({
+  baseUrl: 'https://nomoreparties.co/v1/plus-cohort-21',
+  headers: {
+    authorization: 'ec7ecd53-86da-44fb-8b34-fdbecdd673ff',
+    'Content-Type': 'application/json'
+  }
+})
 
 //функциональность открытия окон
 export function openPopup(domElement) {
@@ -94,7 +102,7 @@ function handleSubmit(request, evt, loadingText = 'Сохранение...') {
 // Обработчик «отправки» формы редактирования профиля
 export function submitEditProfile(evt) {
   function makeRequest() {
-    return editProfile(nameInput.value, bioInput.value).then((user) => {
+    return api.editProfile(nameInput.value, bioInput.value).then((user) => {
       profileName.textContent = user.name; //в значение имени на странице записываем значение из первого поля
       profileAbout.textContent = user.about; //в значение био на странице записываем значение из второго поля
       closePopup(editingProfilePopup); //при нажатии на кнопку "сохранить" закрываем попап
@@ -106,7 +114,7 @@ export function submitEditProfile(evt) {
 // Обработчик «отправки» формы создания карточки
 export function submitAddCard(evt) {
   function makeRequest() {
-    return postCard(titleInput.value, linkInput.value).then((card) => {
+    return api.postCard(titleInput.value, linkInput.value).then((card) => {
       //добавляем карточку в дерево при нажатии кнопки 'Создать'
       const domCard = createCard(card);
       cardsContainer.prepend(domCard);
@@ -120,7 +128,7 @@ export function submitAddCard(evt) {
 export function submitEditAvatar(evt) {
 
   function makeRequest() {
-    return editAvatar(avatarLinkInput.value).then((profile) => {
+    return api.editAvatar(avatarLinkInput.value).then((profile) => {
       avatar.src = profile.avatar;
       closePopup(editingAvatarPopup); //при нажатии на кнопку закрываем попап
     })
