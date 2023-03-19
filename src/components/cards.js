@@ -3,12 +3,12 @@ import { openPopup, profileName, profileAbout, avatar } from './modal.js';
 import { getCards, putLike, deleteLike, getUserInformation, deleteCard } from './api.js';
 import { Api } from './api.js';
 
-const cardTemplate = document.querySelector('#element-template').content;
+// const cardTemplate = document.querySelector('#element-template').content;
 const imagePopup = document.querySelector('.popup_open-image');
 const openedImage = imagePopup.querySelector('.popup__view-image');
 const openedCaption = imagePopup.querySelector('.popup__view-caption');
 let userId;
-export const api = new Api ({
+export const api = new Api({
   baseUrl: 'https://nomoreparties.co/v1/plus-cohort-21',
   headers: {
     authorization: 'ec7ecd53-86da-44fb-8b34-fdbecdd673ff',
@@ -16,6 +16,67 @@ export const api = new Api ({
   }
 })
 
+//откуда взять данные с сервера? id пользователя, карточки
+export class Card {
+  constructor({ link, name, likes, _id, owner }, selector, api, handleCardClick) {
+    this._image = link;
+    this._name = name;
+    this._selector = selector;
+    this._likes = likes;
+    this._id = _id;
+    this._owner = owner._id; //для проверки создателя карточки
+    this._api = api;
+  }
+  _getElement() {
+    const domCard = document
+      .querySelector(this._selector)
+      .content
+      .querySelector('.element')
+      .cloneNode(true);
+
+    // вернём DOM-элемент карточки
+    return domCard;
+  }
+
+  generate() {
+    // Запишем разметку в приватное поле _element
+    // Так у других элементов появится доступ к ней
+    this._element = this._getElement();
+
+    this._setEventListenersLike(); // добавим обработчики
+    this._setEventListenersDelete();
+
+    // Добавим данные
+    this._element.querySelector('.element__image').src = this._image;
+    this._element.querySelector('.element__title').textContent = this._name;
+
+    // Вернём элемент в качестве результата работы метода
+    return this._element;
+  }
+
+  _handleClickLike() {
+    this._element.querySelector('.element__like-button').classList.toggle('element__like-button_active');
+  }
+  _setEventListenersLike() {
+    this._element.querySelector('.element__like-button').addEventListener('click', () => {
+      this._handleClickLike();
+    });
+  }
+  _handleClickDelete() {
+    this._api.deleteCard(this._id).then((this) => {
+      evt.target.closest('.element').remove();
+    })
+      .catch((err) => {
+        console.log(err);
+      })
+  }
+
+  _setEventListenersDelete() {
+    this._element.querySelector('.element__trash-button').addEventListener('click', () => {
+      this._handleClickDelete();
+    });
+  }
+}
 
 //функция создания карточки
 export function createCard(card) {
