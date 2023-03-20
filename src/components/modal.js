@@ -1,5 +1,5 @@
 import { cardsContainer, hideInputError, validationConfig } from './utils.js';
-import { createCard } from './cards.js';
+import { createCard, imagePopup } from './cards.js';
 import { toggleButtonState } from './validate.js';
 import { editAvatar, postCard, editProfile } from './api.js';
 import { Api } from './api.js';
@@ -21,13 +21,14 @@ const addingFormInputs = Array.from(addingCardPopup.querySelectorAll(validationC
 const addingFormButton = addingCardPopup.querySelector(validationConfig.submitButtonSelector);
 const editingAvatarInput = Array.from(editingAvatarPopup.querySelectorAll(validationConfig.inputSelector));
 const editingAvatarButton = editingAvatarPopup.querySelector(validationConfig.submitButtonSelector);
-const api = new Api ({
+const api = new Api({
   baseUrl: 'https://nomoreparties.co/v1/plus-cohort-21',
   headers: {
     authorization: 'ec7ecd53-86da-44fb-8b34-fdbecdd673ff',
     'Content-Type': 'application/json'
   }
 })
+const openedImage = imagePopup.querySelector('.popup__view-image');
 
 //функциональность открытия окон
 export function openPopup(domElement) {
@@ -165,4 +166,13 @@ function closePopupWhenEsc(evt) {
     const anyOpenedPopup = document.querySelector('.popup_opened');
     closePopup(anyOpenedPopup);
   }
+}
+
+//функция открытия попапа с картинкой
+
+export const handleCardClick = () => {
+  openedImage.src = this.image;
+  openedCaption.textContent = this.name;
+  openedImage.alt = this.name;
+  openPopup(imagePopup);
 }
