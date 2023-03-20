@@ -48,6 +48,7 @@ export class Card {
 
     this._setEventListenersLike(); // добавим обработчики
     this._setEventListenersDelete();
+    this._setEventListenersPopupImage();
 
     // Добавим данные
     this._element.querySelector('.element__image').src = this.image;
@@ -65,6 +66,10 @@ export class Card {
     if (this.owner._id !== this.userId) {
       this._element.querySelector('.element__trash-button').remove();
     }
+
+
+    //отрисовать количество лайков
+    this._element.querySelector('.element__like-counter').textContent = this.likes.length;
 
     // Вернём элемент в качестве результата работы метода
     return this._element;
