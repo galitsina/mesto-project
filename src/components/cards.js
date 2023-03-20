@@ -1,11 +1,10 @@
 import { cardsContainer } from './utils.js';
-import { openPopup, profileName, profileAbout, avatar } from './modal.js';
+import { openPopup, profileName, profileAbout, avatar, handleCardClick } from './modal.js';
 import { getCards, putLike, deleteLike, getUserInformation, deleteCard } from './api.js';
 import { Api } from './api.js';
 
 // const cardTemplate = document.querySelector('#element-template').content;
-const imagePopup = document.querySelector('.popup_open-image');
-const openedImage = imagePopup.querySelector('.popup__view-image');
+export const imagePopup = document.querySelector('.popup_open-image');
 const openedCaption = imagePopup.querySelector('.popup__view-caption');
 let userId;
 export const api = new Api({
@@ -18,8 +17,8 @@ export const api = new Api({
 
 export class Card {
   constructor({ link, name, likes, _id, owner }, selector, apiDeleteLike, apiPutLike, apiDeleteCard, userId, handleCardClick) {
-    this._image = link;
-    this._name = name;
+    this.image = link;
+    this.name = name;
     this._selector = selector;
     this._likes = likes;
     this._id = _id;
@@ -28,88 +27,94 @@ export class Card {
     this.apiDeleteLike = apiDeleteLike;
     this.apiPutLike = apiPutLike;
     this.apiDeleteCard = apiDeleteCard;
+    this._handleCardClick = handleCardClick;
   }
 
-_getElement() {
-  const domCard = document
-    .querySelector(this._selector)
-    .content
-    .querySelector('.element')
-    .cloneNode(true);
+  _getElement() {
+    const domCard = document
+      .querySelector(this._selector)
+      .content
+      .querySelector('.element')
+      .cloneNode(true);
 
-  // вернём DOM-элемент карточки
-  return domCard;
-}
+    // вернём DOM-элемент карточки
+    return domCard;
+  }
 
-generate() {
-  // Запишем разметку в приватное поле _element
-  // Так у других элементов появится доступ к ней
-  this._element = this._getElement();
+  generate() {
+    // Запишем разметку в приватное поле _element
+    // Так у других элементов появится доступ к ней
+    this._element = this._getElement();
 
-  this._setEventListenersLike(); // добавим обработчики
-  this._setEventListenersDelete();
+    this._setEventListenersLike(); // добавим обработчики
+    this._setEventListenersDelete();
 
-  // Добавим данные
-  this._element.querySelector('.element__image').src = this._image;
-  this._element.querySelector('.element__title').textContent = this._name;
+    // Добавим данные
+    this._element.querySelector('.element__image').src = this.image;
+    this._element.querySelector('.element__title').textContent = this.name;
 
-  //если пользователь лайкал карточку, сердце закрашено
-  for(let i = 0; i <this._likes.length; i++) {
-    if (this._likes[i]._id === this.userId) {
-      this._element.querySelector('.element__like-button').classList.add('element__like-button_active');
-      break;
+    //если пользователь лайкал карточку, сердце закрашено
+    for (let i = 0; i < this._likes.length; i++) {
+      if (this._likes[i]._id === this.userId) {
+        this._element.querySelector('.element__like-button').classList.add('element__like-button_active');
+        break;
+      }
+    }
+
+    //если карточку создал не пользователь, на ней нет иконки удаления
+    if (this.owner._id !== this.userId) {
+      this._element.querySelector('.element__trash-button').remove();
+    }
+
+    // Вернём элемент в качестве результата работы метода
+    return this._element;
+  }
+
+  _handleClickLike(evt) {
+    const domLike = this._element.querySelector('.element__like-counter');
+    if (evt.target.classList.contains('element__like-button_active')) {
+      this.apiDeleteLike(this._id).then((res) => {
+        domLike.textContent = res.likes.length;
+        evt.target.classList.remove('element__like-button_active');
+      })
+        .catch((err) => {
+          console.log(err);
+        })
+    } else {
+      this.apiPutLike(this._id).then((res) => {
+        domLike.textContent = res.likes.length;
+        evt.target.classList.add('element__like-button_active');
+      })
+        .catch((err) => {
+          console.log(err);
+        })
     }
   }
-
-  //если карточку создал не пользователь, на ней нет иконки удаления
-  if (this.owner._id !== this.userId) {
-    this._element.querySelector('.element__trash-button').remove();
+  _setEventListenersLike() {
+    this._element.querySelector('.element__like-button').addEventListener('click', (evt) => {
+      this._handleClickLike(evt);
+    });
   }
 
-  // Вернём элемент в качестве результата работы метода
-  return this._element;
-}
-
-_handleClickLike(evt) {
-  this._element = this._getElement();
-  const domLike = this._element.querySelector('.element__like-counter');
-  if (evt.target.classList.contains('element__like-button_active')) {
-    this.apiDeleteLike(this._id).then((res) => {
-      domLike.textContent = res.likes.length;
-      evt.target.classList.remove('element__like-button_active');
-    })
-      .catch((err) => {
-        console.log(err);
-      })
-  } else {
-    this.apiPutLike(this._id).then((res) => {
-      domLike.textContent = res.likes.length;
-      evt.target.classList.add('element__like-button_active');
+  _handleClickDelete() {
+    this.apiDeleteCard(this._id).then(() => {
+      evt.target.closest('.element').remove();
     })
       .catch((err) => {
         console.log(err);
       })
   }
-}
-_setEventListenersLike() {
-  this._element.querySelector('.element__like-button').addEventListener('click', (evt) => {
-    this._handleClickLike(evt);
-  });
-}
+  _setEventListenersDelete() {
+    this._element.querySelector('.element__trash-button').addEventListener('click', () => {
+      this._handleClickDelete();
+    });
+  }
 
-_handleClickDelete() {
-  this.apiDeleteCard(this._id).then(() => {
-    evt.target.closest('.element').remove();
-  })
-    .catch((err) => {
-      console.log(err);
-    })
-}
-_setEventListenersDelete() {
-  this._element.querySelector('.element__trash-button').addEventListener('click', () => {
-    this._handleClickDelete();
-  });
-}
+  _setEventListenersPopupImage() {
+    this._element.querySelector('.element__image').addEventListener('click', () => {
+      this._handleCardClick();
+    });
+  }
 
 }
 
