@@ -37,7 +37,7 @@ export function loadInitialCards() {
         //функция-колбэк. Вызывает для каждой карточки, полученной с сервера, метод класса Card,
         // генерирующий карточку, и вставляет каждую карточку методом класса Section setItem в разметку
         renderer: (card) => {
-          const newCard = new Card({link, name, likes, _id, owner }, '#element-template', api.deleteLike, api.putLike, api.deleteCard, card.userId, handleCardClick);
+          const newCard = new Card({link: card.link, name: card.name, likes: card.likes, _id: card._id, owner: card.owner }, '#element-template', api.deleteLike, api.putLike, api.deleteCard, card.userId, handleCardClick);
           const domCard = newCard.generate();
           cardsList.setItem(domCard);
         },
