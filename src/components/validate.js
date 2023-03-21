@@ -1,7 +1,6 @@
 import { hideInputError } from './utils.js';
 export class formValidator {
-  constructor({ formSelector, inputSelector, submitButtonSelector, inactiveButtonClass, inputErrorClass, errorClass }, formElement) {
-    this.formSelector = formSelector;
+  constructor({ inputSelector, submitButtonSelector, inactiveButtonClass, inputErrorClass, errorClass }, formElement) {
     this.inputSelector = inputSelector;
     this.submitButtonSelector = submitButtonSelector;
     this.inactiveButtonClass = inactiveButtonClass;
