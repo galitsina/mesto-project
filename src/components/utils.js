@@ -16,9 +16,4 @@ export const validationConfig = {
   errorClass: 'popup__input-item-error_active'
 };
 
-export function checkResponse(res) {
-  if (res.ok) {
-    return res.json();
-  }
-  return Promise.reject(`Что-то пошло не так: ${res.status}`);
-}
+
