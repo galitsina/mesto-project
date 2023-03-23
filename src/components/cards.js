@@ -17,17 +17,17 @@ export const api = new Api({
 
 export class Card {
   constructor({ link, name, likes, _id, owner }, selector, apiDeleteLike, apiPutLike, apiDeleteCard, userId, handleCardClick) {
-    this.image = link;
-    this.name = name;
-    this._selector = selector;
-    this._likes = likes;
-    this._id = _id;
-    this._owner = owner._id; //для проверки создателя карточки
+    this.image = link; //данные с сервера о ссылке на изображение
+    this.name = name; //данные с сервера об имени карточки
+    this._selector = selector; //селектор контейнера куда вставлять карточки
+    this._likes = likes; //данные с сервера о лайках на карточках
+    this._id = _id; //данные с сервера об id карточки
+    this._owner = owner._id; ////данные с сервера об id владельца карточки
     this.userId = userId; // id пользователя
-    this.apiDeleteLike = apiDeleteLike;
-    this.apiPutLike = apiPutLike;
-    this.apiDeleteCard = apiDeleteCard;
-    this._handleCardClick = handleCardClick;
+    this.apiDeleteLike = apiDeleteLike; // функция deleteLike с сервера,принимает 1 параметр, возвращает промис
+    this.apiPutLike = apiPutLike; //функция putLike с сервера
+    this.apiDeleteCard = apiDeleteCard; //функция deleteCard с сервера
+    this._handleCardClick = handleCardClick; //функция, которая вызывается при клике на карточку
   }
 
   _getElement() {
@@ -117,81 +117,81 @@ export class Card {
 
   _setEventListenersPopupImage() {
     this._element.querySelector('.element__image').addEventListener('click', () => {
-      this._handleCardClick();
+      this._handleCardClick(this.image,this.name);
     });
   }
 
 }
 
 
-// //функция создания карточки
-// export function createCard(card) {
-//   const domCard = cardTemplate.querySelector('.element').cloneNode(true);
-//   domCard.querySelector('.element__title').textContent = card.name;
-//   const cardImage = domCard.querySelector('.element__image');
-//   cardImage.src = card.link;
-//   cardImage.alt = card.name;
+//функция создания карточки
+export function createCard(card) {
+  const domCard = cardTemplate.querySelector('.element').cloneNode(true);
+  domCard.querySelector('.element__title').textContent = card.name;
+  const cardImage = domCard.querySelector('.element__image');
+  cardImage.src = card.link;
+  cardImage.alt = card.name;
 
-//   //взять c сервера количество лайков
-//   const likedUsers = card.likes;
-//   const likesCount = likedUsers.length;
-//   const domLike = domCard.querySelector('.element__like-counter');
+  //взять c сервера количество лайков
+  const likedUsers = card.likes;
+  const likesCount = likedUsers.length;
+  const domLike = domCard.querySelector('.element__like-counter');
 
-//   domLike.textContent = likesCount;
+  domLike.textContent = likesCount;
 
-//   //функциональность для лайка карточек
-//   const likeButton = domCard.querySelector('.element__like-button');
-//   for (let i = 0; i < likesCount; i++) {
-//     if (likedUsers[i]._id === userId) {
-//       likeButton.classList.add('element__like-button_active');
-//       break;
-//     }
-//   }
+  //функциональность для лайка карточек
+  const likeButton = domCard.querySelector('.element__like-button');
+  for (let i = 0; i < likesCount; i++) {
+    if (likedUsers[i]._id === userId) {
+      likeButton.classList.add('element__like-button_active');
+      break;
+    }
+  }
 
-//   likeButton.addEventListener('click', function (evt) {
-//     if (evt.target.classList.contains('element__like-button_active')) {
-//       api.deleteLike(card._id).then((res) => {
-//         domLike.textContent = res.likes.length;
-//         evt.target.classList.remove('element__like-button_active');
-//       })
-//         .catch((err) => {
-//           console.log(err);
-//         })
-//     } else {
-//       api.putLike(card._id).then((res) => {
-//         domLike.textContent = res.likes.length;
-//         evt.target.classList.add('element__like-button_active');
-//       })
-//         .catch((err) => {
-//           console.log(err);
-//         })
-//     }
-//   });
+  likeButton.addEventListener('click', function (evt) {
+    if (evt.target.classList.contains('element__like-button_active')) {
+      api.deleteLike(card._id).then((res) => {
+        domLike.textContent = res.likes.length;
+        evt.target.classList.remove('element__like-button_active');
+      })
+        .catch((err) => {
+          console.log(err);
+        })
+    } else {
+      api.putLike(card._id).then((res) => {
+        domLike.textContent = res.likes.length;
+        evt.target.classList.add('element__like-button_active');
+      })
+        .catch((err) => {
+          console.log(err);
+        })
+    }
+  });
 
-//   //функциональность удаления карточки
-//   const trashButton = domCard.querySelector('.element__trash-button');
-//   trashButton.addEventListener('click', function (evt) {
-//     api.deleteCard(card._id).then((card) => {
-//       evt.target.closest('.element').remove();
-//     })
-//       .catch((err) => {
-//         console.log(err);
-//       })
-//   });
-//   if (card.owner._id !== userId) {
-//     trashButton.remove();
-//   }
+  //функциональность удаления карточки
+  const trashButton = domCard.querySelector('.element__trash-button');
+  trashButton.addEventListener('click', function (evt) {
+    api.deleteCard(card._id).then((card) => {
+      evt.target.closest('.element').remove();
+    })
+      .catch((err) => {
+        console.log(err);
+      })
+  });
+  if (card.owner._id !== userId) {
+    trashButton.remove();
+  }
 
-//   //функциональность открытия попапа с картинкой
-//   cardImage.addEventListener('click', function (evt) {
-//     openedImage.src = card.link;
-//     openedCaption.textContent = card.name;
-//     openedImage.alt = openedCaption.textContent;
-//     openPopup(imagePopup);
-//   });
+  //функциональность открытия попапа с картинкой
+  cardImage.addEventListener('click', function (evt) {
+    openedImage.src = card.link;
+    openedCaption.textContent = card.name;
+    openedImage.alt = openedCaption.textContent;
+    openPopup(imagePopup);
+  });
 
-//   return domCard;
-// }
+  return domCard;
+}
 
 //функция добавления карточек
 export function loadInitialCards() {
