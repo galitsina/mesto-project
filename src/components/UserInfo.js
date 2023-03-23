@@ -7,7 +7,7 @@ export class UserInfo {
   //публичный метод, который возвращает объект с полученными от сервера данными. Подставить в форму при открытии
   getUserInfo() {
     return this._api
-      .getUserInfo()
+      .getUserInformation()
       .then((res) => {
         const user = {};
         user.name = res.name;
@@ -33,4 +33,4 @@ export class UserInfo {
   }
 }
 
-const UserInfo = new UserInfo('.profile__name', '.profile__bio', api)
+const userInfo = new UserInfo('.profile__name', '.profile__bio', api)
