@@ -78,21 +78,9 @@ export class Card {
   _handleClickLike(evt) {
     const domLike = this._element.querySelector('.element__like-counter');
     if (evt.target.classList.contains('element__like-button_active')) {
-      this.apiDeleteLike(this._id).then((res) => {
-        domLike.textContent = res.likes.length;
-        evt.target.classList.remove('element__like-button_active');
-      })
-        .catch((err) => {
-          console.log(err);
-        })
+      this.apiDeleteLike(evt, this._id, domLike);
     } else {
-      this.apiPutLike(this._id).then((res) => {
-        domLike.textContent = res.likes.length;
-        evt.target.classList.add('element__like-button_active');
-      })
-        .catch((err) => {
-          console.log(err);
-        })
+      this.apiPutLike(evt, this._id, domLike);
     }
   }
   _setEventListenersLike() {
@@ -101,23 +89,18 @@ export class Card {
     });
   }
 
-  _handleClickDelete() {
-    this.apiDeleteCard(this._id).then(() => {
-      evt.target.closest('.element').remove();
-    })
-      .catch((err) => {
-        console.log(err);
-      })
+  _handleClickDelete(evt) {
+    this.apiDeleteCard(evt, this._id)
   }
   _setEventListenersDelete() {
-    this._element.querySelector('.element__trash-button').addEventListener('click', () => {
-      this._handleClickDelete();
+    this._element.querySelector('.element__trash-button').addEventListener('click', (evt) => {
+      this._handleClickDelete(evt);
     });
   }
 
   _setEventListenersPopupImage() {
     this._element.querySelector('.element__image').addEventListener('click', () => {
-      this._handleCardClick();
+      this._handleCardClick(this.image, this.name);
     });
   }
 
@@ -193,7 +176,27 @@ export class Card {
 //   return domCard;
 // }
 
-//функция добавления карточек
+// //функция добавления карточек
+// export function loadInitialCards() {
+//   Promise.all([api.getCards(), api.getUserInformation()])
+//     .then((promises) => {
+//       const cardsArray = promises[0];
+//       const userInformation = promises[1];
+//       userId = userInformation._id;
+//       profileName.textContent = userInformation.name;
+//       profileAbout.textContent = userInformation.about;
+//       avatar.src = userInformation.avatar;
+//       //получаем массив карточек от сервера
+//       for (let i = 0; i < cardsArray.length; i++) {
+//         let domCard = createCard(cardsArray[i]);
+//         cardsContainer.prepend(domCard);
+//       }
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// }
+
 export function loadInitialCards() {
   Promise.all([api.getCards(), api.getUserInformation()])
     .then((promises) => {
@@ -203,14 +206,66 @@ export function loadInitialCards() {
       profileName.textContent = userInformation.name;
       profileAbout.textContent = userInformation.about;
       avatar.src = userInformation.avatar;
-      //получаем массив карточек от сервера
-      for (let i = 0; i < cardsArray.length; i++) {
-        let domCard = createCard(cardsArray[i]);
-        cardsContainer.prepend(domCard);
-      }
+      //создаём экземпляр класса Section
+
+      const cardsList = new Section({
+        data: cardsArray,
+        //функция-колбэк. Вызывает для каждой карточки, полученной с сервера, метод класса Card,
+        // генерирующий карточку, и вставляет каждую карточку методом класса Section setItem в разметку
+        renderer: (card) => {
+          const newCard = new Card({ link: card.link, name: card.name, likes: card.likes, _id: card._id, owner: card.owner }, '#element-template',
+            //передаём как колбэк функцию, убирающую лайк
+            (evt, _id, domLike) => {
+              api.deleteLike(_id)
+                .then((res) => {
+                  domLike.textContent = res.likes.length;
+                  evt.target.classList.remove('element__like-button_active');
+                })
+                .catch((err) => {
+                  console.log(err);
+                })
+            },
+            //передаём как колбэк функцию, добавляющую лайк
+            (evt, _id, domLike) => {
+              api.putLike(_id).then((res) => {
+                domLike.textContent = res.likes.length;
+                evt.target.classList.add('element__like-button_active');
+              })
+                .catch((err) => {
+                  console.log(err);
+                })
+            },
+            //передаём как колбэк функцию, удаляющую карточку
+            (evt, _id) => {
+              api.deleteCard(_id).then(() => {
+                evt.target.closest('.element').remove();
+              })
+                .catch((err) => {
+                  console.log(err);
+                })
+            },
+            card.userId, handleCardClick);
+          const domCard = newCard.generate();
+          cardsList.setItem(domCard);
+        },
+      },
+        elements //селектор контейнера с карточками
+      );
+
+      //   for (let i = 0; i < cardsArray.length; i++) {
+      //     let domCard = createCard(cardsArray[i]);
+      //     cardsContainer.prepend(domCard);
+      //   }
     })
     .catch((err) => {
       console.log(err);
     });
 }
 
+//правильная версия handleCardClick
+export const handleCardClick = (link, name) => {
+  openedImage.src = link;
+  openedCaption.textContent = name;
+  openedImage.alt = name;
+  openPopup(imagePopup); //здесь надо связать с классом попап с картинкой
+}
