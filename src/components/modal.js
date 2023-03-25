@@ -1,8 +1,6 @@
 import { cardsContainer, hideInputError, validationConfig } from './utils.js';
-import { createCard, imagePopup } from './cards.js';
-import { toggleButtonState } from './validate.js';
-import { editAvatar, postCard, editProfile } from './api.js';
-import { Api } from './api.js';
+import { toggleButtonState } from './FormValidator.js';
+import { Api } from './Api.js';
 
 export const editingProfilePopup = document.querySelector('.popup_edit-form');
 export const addingCardPopup = document.querySelector('.popup_add-form');
@@ -28,7 +26,7 @@ const api = new Api({
     'Content-Type': 'application/json'
   }
 })
-const openedImage = imagePopup.querySelector('.popup__view-image');
+// const openedImage = imagePopup.querySelector('.popup__view-image');
 
 //функциональность открытия окон
 export function openPopup(domElement) {
@@ -166,13 +164,4 @@ function closePopupWhenEsc(evt) {
     const anyOpenedPopup = document.querySelector('.popup_opened');
     closePopup(anyOpenedPopup);
   }
-}
-
-//функция открытия попапа с картинкой
-
-export const handleCardClick = () => {
-  openedImage.src = this.image;
-  openedCaption.textContent = this.name;
-  openedImage.alt = this.name;
-  openPopup(imagePopup);
 }

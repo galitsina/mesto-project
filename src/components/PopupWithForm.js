@@ -136,12 +136,6 @@ const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
   )
 
 
-  //эти комментарии только для Тани, удалить эти строки после использования:
-  //как использовать экземпляр класса PopupWithImage: помещаем его внутрь handleCardClick
-  const popupWithImage = new PopupWithImage('.popup_open-image')
-  const handleCardClick = (image, name) => {
-    popupWithImage.open(image, name);
-  }
   //обрати внимание, что здесь нет строк:
   // openedImage.src = link;
   // openedCaption.textContent = name;
