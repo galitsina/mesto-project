@@ -1,4 +1,4 @@
-class Popup {
+export class Popup {
   constructor(selector) {
     this.selector = selector;
     this.popupElement = document.querySelector(this.selector); //разметка попапа
