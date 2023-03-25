@@ -16,7 +16,7 @@ export class formValidator {
     errorElement.classList.add(this.errorClass);
   }
 
-  hideInputError(inputElement) {
+  _hideInputError(inputElement) {
     const errorElement = this.formElement.querySelector(`.${inputElement.id}-error`);
     inputElement.classList.remove(this.inputErrorClass);
     errorElement.classList.remove(this.errorClass);
@@ -33,7 +33,7 @@ export class formValidator {
     if (!inputElement.validity.valid) {
       this._showInputError(inputElement, inputElement.validationMessage)
     } else {
-      this.hideInputError(inputElement)
+      this._hideInputError(inputElement)
     }
   }
 
@@ -122,3 +122,11 @@ export function enableValidation(config) {
   });
 }
 
+const validationConfig = {
+  formSelector: '.popup__input-container',
+  inputSelector: '.popup__input-item',
+  submitButtonSelector: '.popup__save-button',
+  inactiveButtonClass: 'popup__save-button_inactive',
+  inputErrorClass: 'popup__input-item_type_error',
+  errorClass: 'popup__input-item-error_active'
+};
