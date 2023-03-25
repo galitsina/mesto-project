@@ -9,13 +9,13 @@ const openedCaption = imagePopup.querySelector('.popup__view-caption');
 
 
 export class Card {
-  constructor({ link, name, likes, id, owner }, selector, apiDeleteLike, apiPutLike, apiDeleteCard, userId, handleCardClick) {
-    this.image = link; //данные с сервера о ссылке на изображение
-    this.name = name; //данные с сервера об имени карточки
+  constructor( data, selector, apiDeleteLike, apiPutLike, apiDeleteCard, userId, handleCardClick) {
+    this.image = data.link; //данные с сервера о ссылке на изображение
+    this.name = data.name; //данные с сервера об имени карточки
     this._selector = selector; //селектор контейнера куда вставлять карточки
-    this._likes = likes; //данные с сервера о лайках на карточках
-    this._id = id; //данные с сервера об id карточки
-    this._owner = owner._id; ////данные с сервера об id владельца карточки
+    this._likes = data.likes; //данные с сервера о лайках на карточках
+    this._id = data._id; //данные с сервера об id карточки
+    this._owner = data.owner._id; ////данные с сервера об id владельца карточки
     this.userId = userId; // id пользователя
     this.apiDeleteLike = apiDeleteLike; // функция deleteLike с сервера,принимает 1 параметр, возвращает промис
     this.apiPutLike = apiPutLike; //функция putLike с сервера

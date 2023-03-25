@@ -50,6 +50,36 @@ export const api = new Api({
   }
 })
 
+const apiDeleteLike = (evt, userId, domLike) => {
+  api.deleteLike(userId)
+    .then((res) => {
+      domLike.textContent = res.likes.length;
+      evt.target.classList.remove('element__like-button_active');
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+}
+
+const apiPutLike = (evt, id, domLike) => {
+  api.putLike(id).then((res) => {
+    domLike.textContent = res.likes.length;
+    evt.target.classList.add('element__like-button_active');
+  })
+    .catch((err) => {
+      console.log(err);
+    })
+}
+
+const apiDeleteCard = (evt, id) => {
+  api.deleteCard(id).then(() => {
+    evt.target.closest('.element').remove();
+  })
+    .catch((err) => {
+      console.log(err);
+    })
+}
+
 const userInfo = new UserInfo('.profile__name', '.profile__bio', () => {
   return api.getUserInformation()
     .then((res) => {
@@ -74,6 +104,34 @@ const userInfo = new UserInfo('.profile__name', '.profile__bio', () => {
     });
 })
 
+function createCard(card) {
+  const newCard = new Card(card,
+    '#element-template',
+    apiDeleteLike,
+    apiPutLike,
+    apiDeleteCard,
+    userId,
+    handleCardClick
+  ).generate();
+  return newCard;
+}
+
+const renderer = (card) => {
+  const domCard = createCard(card);
+  console.log(domCard);
+  cardsList.setItem(domCard);
+}
+
+const cardsList = new Section({
+  items: [],
+  //функция-колбэк. Вызывает для каждой карточки, полученной с сервера, метод класса Card,
+  // генерирующий карточку, и вставляет каждую карточку методом класса Section setItem в разметку
+  renderer: renderer,
+},
+  '.elements' //селектор контейнера с карточками
+);
+
+
 
 
 
@@ -89,51 +147,8 @@ export function loadInitialCards() {
       profileName.textContent = userInformation.name;
       profileAbout.textContent = userInformation.about;
       avatar.src = userInformation.avatar;
-      //создаём экземпляр класса Section
-      const cardsList = new Section({
-        items: cardsArray,
-        //функция-колбэк. Вызывает для каждой карточки, полученной с сервера, метод класса Card,
-        // генерирующий карточку, и вставляет каждую карточку методом класса Section setItem в разметку
-        renderer: (card) => {
-          const newCard = new Card({ link: card.link, name: card.name, likes: card.likes, id: card._id, owner: card.owner }, '#element-template',
-            //передаём как колбэк функцию, убирающую лайк
-            (evt, userId, domLike) => {
-              api.deleteLike(userId)
-                .then((res) => {
-                  domLike.textContent = res.likes.length;
-                  evt.target.classList.remove('element__like-button_active');
-                })
-                .catch((err) => {
-                  console.log(err);
-                })
-            },
-            //передаём как колбэк функцию, добавляющую лайк
-            (evt, id, domLike) => {
-              api.putLike(id).then((res) => {
-                domLike.textContent = res.likes.length;
-                evt.target.classList.add('element__like-button_active');
-              })
-                .catch((err) => {
-                  console.log(err);
-                })
-            },
-            //передаём как колбэк функцию, удаляющую карточку
-            (evt, id) => {
-              api.deleteCard(id).then(() => {
-                evt.target.closest('.element').remove();
-              })
-                .catch((err) => {
-                  console.log(err);
-                })
-            },
-            userId, handleCardClick);
-          const domCard = newCard.generate();
-          console.log(domCard);
-          cardsList.setItem(domCard);
-        },
-      },
-        '.elements' //селектор контейнера с карточками
-      );
+
+      cardsList.items = cardsArray;
       console.log(cardsList)
       cardsList.renderItems();
     })
