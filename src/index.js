@@ -1,11 +1,12 @@
 import './pages/index.css';
-import {validationConfig, cardsContainer, profileName, profileAbout, avatar, renderLoading, editButton, addButton, editAvatarButton} from './utils/constants.js';
+import {validationConfig, cardsContainer, profileName, profileAbout, avatar, renderLoading, editButton, addButton, editAvatarButton, formEditProfile, formAddCard, formEditAvatar} from './utils/constants.js';
 import { PopupWithImage } from './components/PopupWithImage';
 import { PopupWithForm } from './components/PopupWithForm';
 import { Api } from './components/Api';
 import { UserInfo } from './components/UserInfo';
 import { Card } from './components/Card';
 import { Section } from './components/Section';
+import { FormValidator } from './components/FormValidator';
 
 let userId;
 
@@ -84,7 +85,7 @@ const userInfo = new UserInfo('.profile__name', '.profile__bio', () => {
       console.log(`Ошибка: ${err}`);
     });
 }, (name, about, nameSelector, aboutSelector) => {
-  api.editProfile(name, about)
+  return api.editProfile(name, about)
     .then((res) => {
       document.querySelector(nameSelector).textContent = res.name;
       document.querySelector(aboutSelector).textContent = res.about;
@@ -151,11 +152,9 @@ const popupEditProfile = new PopupWithForm('.popup_edit-form',
     // записываем начальный текст кнопки до вызова запроса
     const initialText = submitButton.textContent;
     // изменяем текст кнопки до вызова запроса
-    renderLoading(true, submitButton, initialText, loadingText);
+    renderLoading(true, submitButton, initialText, 'Сохранение...');
 
-    userInfo.getUserInfo().then((user) => {
-      profileName.textContent = user.name; //в значение имени на странице записываем значение из первого поля
-      profileAbout.textContent = user.about; //в значение био на странице записываем значение из второго поля
+    userInfo.setUserInfo(inputValues.name, inputValues.about).then((user) => {
       popupEditProfile.close(); //при нажатии на кнопку "сохранить" закрываем попап
     })
       .catch((err) => {
@@ -165,10 +164,11 @@ const popupEditProfile = new PopupWithForm('.popup_edit-form',
       .finally(() => {
         renderLoading(false, submitButton, initialText);
       });
-  },
-  validationConfig
+  }
 )
 editButton.addEventListener('click', popupEditProfile.open.bind(popupEditProfile));
+const formValidatorAddCard = new FormValidator (validationConfig, formAddCard);
+formValidatorAddCard.enableValidation();
 popupEditProfile.setEventListeners()
 
 
@@ -192,16 +192,18 @@ const popupAddCard = new PopupWithForm('.popup_add-form',
     .finally(() => {
       renderLoading(false, submitButton, initialText);
     });
-  },
-  validationConfig
+  }
   )
+  const formValidatorEditProfile = new FormValidator (validationConfig, formEditProfile);
+  formValidatorEditProfile.enableValidation();
+
 
 // editAvatarButton.addEventListener('click', openEditAvatar);
 const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
   (evt, inputValues) => {
     const submitButton = evt.submitter;
     const initialText = submitButton.textContent;
-    renderLoading(true, submitButton, initialText, loadingText);
+    renderLoading(true, submitButton, initialText, 'Сохранение...');
     api.editAvatar(inputValues.avatarlink).then((profile) => {
       avatar.src = profile.avatar;
       popupEditAvatar.close();
@@ -212,8 +214,9 @@ const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
     .finally(() => {
       renderLoading(false, submitButton, initialText);
     });
-  },
-  validationConfig
+  }
   )
+  const formValidatorEditAvatar = new FormValidator (validationConfig, formEditAvatar);
+  formValidatorEditAvatar.enableValidation();
 
 

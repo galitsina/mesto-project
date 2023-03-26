@@ -5,14 +5,13 @@ export class Popup {
   }
 
   open() {
-    console.log(this);
     this.popupElement.classList.add('popup_opened');
-    this.popupElement.addEventListener('keydown', this._handleEscClose);
+    document.addEventListener('keydown', this._handleEscClose);
   }
 
   close() {
     this.popupElement.classList.remove('popup_opened');
-    this.popupElement.removeEventListener('keydown', this._handleEscClose);
+    document.removeEventListener('keydown', this._handleEscClose);
   }
 
   _handleEscClose(evt) {
@@ -23,16 +22,17 @@ export class Popup {
 
   setEventListeners() {
     const closeButton = this.popupElement.querySelector('.popup__close-icon');
+    const thisPopup = this; //объявляем константу для передачи в addEventListener, т.к this внутри теряет контекст
     closeButton.addEventListener('click', function (evt) {
       //parentPopup - родитель кнопки closeButton
       const parentPopup = evt.target.closest(this.selector);
-      this.close(parentPopup);
+      thisPopup.close(parentPopup);
     });
 
     //клик на оверлей - закрытие попапа
     this.popupElement.addEventListener('click', function (evt) {
       if (evt.currentTarget === evt.target) {
-        this.close(evt.currentTarget);
+        thisPopup.close(evt.currentTarget);
       }
     });
   }

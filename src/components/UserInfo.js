@@ -14,6 +14,6 @@ export class UserInfo {
 
   //публичный метод setUserInfo, который принимает новые данные пользователя, отправляет их на сервер и добавляет их на страницу.
   setUserInfo(name, about) {
-    this._setInfo(name, about, this.nameSelector, this.aboutSelector);
+    return this._setInfo(name, about, this.nameSelector, this.aboutSelector);
   }
 }
