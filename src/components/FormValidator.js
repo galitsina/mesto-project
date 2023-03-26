@@ -1,5 +1,4 @@
-import { hideInputError } from './utils.js';
-export class formValidator {
+export class FormValidator {
   constructor({ inputSelector, submitButtonSelector, inactiveButtonClass, inputErrorClass, errorClass }, formElement) {
     this.inputSelector = inputSelector;
     this.submitButtonSelector = submitButtonSelector;
@@ -56,11 +55,13 @@ export class formValidator {
   enableValidation() {
     const inputs = Array.from(this.formElement.querySelectorAll(this.inputSelector));
     const buttonElement = this.formElement.querySelector(this.submitButtonSelector);
+    const formValidatorThis = this; //объявляем константу для передачи в forEach, т.к this внутри теряет контекст и становится разметкой инпута
+
     this._toggleButtonState(inputs, buttonElement);
     inputs.forEach(function (inputElement) {
       inputElement.addEventListener('input', function () {
-        this._checkInputValidity(inputElement);
-        this._toggleButtonState(inputs, buttonElement);
+        formValidatorThis._checkInputValidity(inputElement);
+        formValidatorThis._toggleButtonState(inputs, buttonElement);
       });
     });
   }

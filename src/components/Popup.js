@@ -5,6 +5,7 @@ export class Popup {
   }
 
   open() {
+    console.log(this);
     this.popupElement.classList.add('popup_opened');
     this.popupElement.addEventListener('keydown', this._handleEscClose);
   }
@@ -20,11 +21,8 @@ export class Popup {
     }
   }
 
-  //вынести этот селектор кнопки закрытия в constants.js
-  //const closeButtonSelector = '.popup__close-icon';
-
-  setEventListeners(closeButtonSelector) {
-    const closeButton = this.popupElement.querySelector(closeButtonSelector);
+  setEventListeners() {
+    const closeButton = this.popupElement.querySelector('.popup__close-icon');
     closeButton.addEventListener('click', function (evt) {
       //parentPopup - родитель кнопки closeButton
       const parentPopup = evt.target.closest(this.selector);

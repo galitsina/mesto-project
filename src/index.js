@@ -1,24 +1,14 @@
 import './pages/index.css';
-import { enableValidation } from './components/FormValidator.js';
-import { openAddCard, submitEditProfile, submitAddCard, openEditProfile, initPopupCloseListeners, editingProfilePopup, addingCardPopup, openEditAvatar, submitEditAvatar, editingAvatarPopup, profileName, profileAbout, avatar } from './components/modal.js';
-import { validationConfig } from './components/utils.js';
+import {validationConfig, cardsContainer, profileName, profileAbout, avatar, renderLoading, editButton, addButton, editAvatarButton} from './utils/constants.js';
 import { PopupWithImage } from './components/PopupWithImage';
+import { PopupWithForm } from './components/PopupWithForm';
 import { Api } from './components/Api';
 import { UserInfo } from './components/UserInfo';
 import { Card } from './components/Card';
 import { Section } from './components/Section';
 
-// const editButton = document.querySelector('.profile__edit-button');
-// const addButton = document.querySelector('.profile__add-button');
-// const editAvatarButton = document.querySelector('.profile__avatar-overlay');
-// const popupSelector = '.popup';
-// const closeButtonSelector = '.popup__close-icon';
 let userId;
-// editButton.addEventListener('click', openEditProfile);
 
-// addButton.addEventListener('click', openAddCard);
-
-// editAvatarButton.addEventListener('click', openEditAvatar);
 
 // editingProfilePopup.addEventListener('submit', submitEditProfile);
 
@@ -96,8 +86,8 @@ const userInfo = new UserInfo('.profile__name', '.profile__bio', () => {
 }, (name, about, nameSelector, aboutSelector) => {
   api.editProfile(name, about)
     .then((res) => {
-      document.querySelector(nameSelector).textContent = res["name"];
-      document.querySelector(aboutSelector).textContent = res["about"];
+      document.querySelector(nameSelector).textContent = res.name;
+      document.querySelector(aboutSelector).textContent = res.about;
     })
     .catch(err => {
       console.log(`Ошибка: ${err}`);
@@ -118,7 +108,6 @@ function createCard(card) {
 
 const renderer = (card) => {
   const domCard = createCard(card);
-  console.log(domCard);
   cardsList.setItem(domCard);
 }
 
@@ -131,10 +120,6 @@ const cardsList = new Section({
   '.elements' //селектор контейнера с карточками
 );
 
-
-
-
-
 // userInfo.getUserInfo().then((res) => console.log(res));
 
 export function loadInitialCards() {
@@ -142,14 +127,13 @@ export function loadInitialCards() {
     .then((promises) => {
       const cardsArray = promises[0];
       const userInformation = promises[1];
-      userId = userInformation.id;
+      userId = userInformation._id;
 
       profileName.textContent = userInformation.name;
       profileAbout.textContent = userInformation.about;
       avatar.src = userInformation.avatar;
 
       cardsList.items = cardsArray;
-      console.log(cardsList)
       cardsList.renderItems();
     })
     .catch((err) => {
@@ -158,3 +142,78 @@ export function loadInitialCards() {
 }
 
 loadInitialCards();
+
+
+const popupEditProfile = new PopupWithForm('.popup_edit-form',
+  (evt, inputValues) => {
+    // универсально получаем кнопку сабмита из `evt`
+    const submitButton = evt.submitter;
+    // записываем начальный текст кнопки до вызова запроса
+    const initialText = submitButton.textContent;
+    // изменяем текст кнопки до вызова запроса
+    renderLoading(true, submitButton, initialText, loadingText);
+
+    userInfo.getUserInfo().then((user) => {
+      profileName.textContent = user.name; //в значение имени на странице записываем значение из первого поля
+      profileAbout.textContent = user.about; //в значение био на странице записываем значение из второго поля
+      popupEditProfile.close(); //при нажатии на кнопку "сохранить" закрываем попап
+    })
+      .catch((err) => {
+        console.error(`Ошибка: ${err}`);
+      })
+      // возвращаем обратно начальный текст кнопки
+      .finally(() => {
+        renderLoading(false, submitButton, initialText);
+      });
+  },
+  validationConfig
+)
+editButton.addEventListener('click', popupEditProfile.open.bind(popupEditProfile));
+popupEditProfile.setEventListeners()
+
+
+// addButton.addEventListener('click', openAddCard);
+
+
+const popupAddCard = new PopupWithForm('.popup_add-form',
+  (evt, inputValues) => {
+    const submitButton = evt.submitter;
+    const initialText = submitButton.textContent;
+    renderLoading(true, submitButton, initialText, 'Создание');
+    api.postCard(inputValues.title, inputValues.link).then((card) => {
+      //добавляем карточку в дерево при нажатии кнопки 'Создать', здесь нужен объект Section
+      // const domCard = createCard(card);
+      // cardsContainer.prepend(domCard);
+      popupAddCard.close(); //при нажатии на кнопку "создать" закрываем попап
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`);
+    })
+    .finally(() => {
+      renderLoading(false, submitButton, initialText);
+    });
+  },
+  validationConfig
+  )
+
+// editAvatarButton.addEventListener('click', openEditAvatar);
+const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
+  (evt, inputValues) => {
+    const submitButton = evt.submitter;
+    const initialText = submitButton.textContent;
+    renderLoading(true, submitButton, initialText, loadingText);
+    api.editAvatar(inputValues.avatarlink).then((profile) => {
+      avatar.src = profile.avatar;
+      popupEditAvatar.close();
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`);
+    })
+    .finally(() => {
+      renderLoading(false, submitButton, initialText);
+    });
+  },
+  validationConfig
+  )
+
+
