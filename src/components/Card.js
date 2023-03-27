@@ -9,14 +9,14 @@ const openedCaption = imagePopup.querySelector('.popup__view-caption');
 
 
 export class Card {
-  constructor( data, selector, apiDeleteLike, apiPutLike, apiDeleteCard, userId, handleCardClick) {
+  constructor(data, selector, apiDeleteLike, apiPutLike, apiDeleteCard, handleCardClick, userId) {
     this.image = data.link; //данные с сервера о ссылке на изображение
     this.name = data.name; //данные с сервера об имени карточки
     this._selector = selector; //селектор контейнера куда вставлять карточки
     this._likes = data.likes; //данные с сервера о лайках на карточках
     this._id = data._id; //данные с сервера об id карточки
+    this.userId = userId;
     this._ownerId = data.owner._id; ////данные с сервера об id владельца карточки
-    this.userId = userId; // id пользователя
     this.apiDeleteLike = apiDeleteLike; // функция deleteLike с сервера,принимает 1 параметр, возвращает промис
     this.apiPutLike = apiPutLike; //функция putLike с сервера
     this.apiDeleteCard = apiDeleteCard; //функция deleteCard с сервера
@@ -37,7 +37,8 @@ export class Card {
     // Запишем разметку в приватное поле _element
     // Так у других элементов появится доступ к ней
     this._element = this._getElement();
-
+    console.log(this.userId);
+    console.log(this._ownerId);
     this._setEventListenersLike(); // добавим обработчики
     this._setEventListenersDelete();
     this._setEventListenersPopupImage();
@@ -46,14 +47,8 @@ export class Card {
     this._element.querySelector('.element__image').src = this.image;
     this._element.querySelector('.element__image').alt = this.name;
     this._element.querySelector('.element__title').textContent = this.name;
+    this._element.querySelector('.element__like-counter').textContent = this._likes.length;
 
-    //если пользователь лайкал карточку, сердце закрашено
-    // for (let i = 0; i < this._likes.length; i++) {
-    //   if (this._likes[i]._id === this.userId) {
-    //     this._element.querySelector('.element__like-button').classList.add('element__like-button_active');
-    //     break;
-    //   }
-    // }
 
     if (this._likes.some(obj => obj._id == this.userId)) {
       this._element.querySelector('.element__like-button').classList.add("element__like-button_active");
@@ -62,7 +57,6 @@ export class Card {
     if (this._ownerId !== this.userId) {
       this._element.querySelector('.element__trash-button').remove();
     }
-
 
     //отрисовать количество лайков
     this._element.querySelector('.element__like-counter').textContent = this._likes._length;

@@ -6,9 +6,14 @@ export class PopupWithImage extends Popup {
   }
 
   open(link, name) {
-    this.popupElement.src = link;
-    this.popupElement.textContent = name;
-    this.popupElement.alt = name;
-    super.open();
+    this.popupElement.querySelector('.popup__view-image').src = link;
+    this.popupElement.querySelector('.popup__view-caption').textContent = name;
+    this.popupElement.querySelector('.popup__view-image').alt = name;
+    this.popupElement.classList.add('popup_opened');
+    document.addEventListener('keydown', (evt) => this._handleEscClose(evt));
+  }
+
+  setEventListeners() {
+    super.setEventListeners();
   }
 }

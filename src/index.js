@@ -1,5 +1,5 @@
 import './pages/index.css';
-import {validationConfig, cardsContainer, profileName, profileAbout, avatar, renderLoading, editButton, addButton, editAvatarButton, formEditProfile, formAddCard, formEditAvatar} from './utils/constants.js';
+import { validationConfig, cardsContainer, profileName, profileAbout, avatar, renderLoading, editButton, addButton, editAvatarButton, formEditProfile, formAddCard, formEditAvatar } from './utils/constants.js';
 import { PopupWithImage } from './components/PopupWithImage';
 import { PopupWithForm } from './components/PopupWithForm';
 import { Api } from './components/Api';
@@ -7,28 +7,14 @@ import { UserInfo } from './components/UserInfo';
 import { Card } from './components/Card';
 import { Section } from './components/Section';
 import { FormValidator } from './components/FormValidator';
+import { newPlaceAddButton, avatarEditButton } from './utils/constants.js';
 
 let userId;
 
-
-// editingProfilePopup.addEventListener('submit', submitEditProfile);
-
-// addingCardPopup.addEventListener('submit', submitAddCard);
-
-// editingAvatarPopup.addEventListener('submit', submitEditAvatar);
-
-// loadInitialCards();
-
-// initPopupCloseListeners(closeButtonSelector, popupSelector);
-
-// enableValidation(validationConfig);
-//правильная версия handleCardClick
 const popupWithImage = new PopupWithImage('.popup_open-image');
+popupWithImage.setEventListeners();
 
 const handleCardClick = (link, name) => {
-  openedImage.src = link;
-  openedCaption.textContent = name;
-  openedImage.alt = name;
   popupWithImage.open(link, name);
 }
 
@@ -101,8 +87,8 @@ function createCard(card) {
     apiDeleteLike,
     apiPutLike,
     apiDeleteCard,
-    userId,
-    handleCardClick
+    handleCardClick,
+    userId
   ).generate();
   return newCard;
 }
@@ -128,12 +114,12 @@ export function loadInitialCards() {
     .then((promises) => {
       const cardsArray = promises[0];
       const userInformation = promises[1];
-      userId = userInformation._id;
+      userId = userInformation.id;
 
       profileName.textContent = userInformation.name;
       profileAbout.textContent = userInformation.about;
       avatar.src = userInformation.avatar;
-
+      console.log(cardsArray);
       cardsList.items = cardsArray;
       cardsList.renderItems();
     })
@@ -166,10 +152,12 @@ const popupEditProfile = new PopupWithForm('.popup_edit-form',
       });
   }
 )
-editButton.addEventListener('click', popupEditProfile.open.bind(popupEditProfile));
-const formValidatorAddCard = new FormValidator (validationConfig, formAddCard);
+editButton.addEventListener('click', () => popupEditProfile.open());
+const formValidatorAddCard = new FormValidator(validationConfig, formAddCard);
 formValidatorAddCard.enableValidation();
 popupEditProfile.setEventListeners()
+
+
 
 
 // addButton.addEventListener('click', openAddCard);
@@ -186,17 +174,20 @@ const popupAddCard = new PopupWithForm('.popup_add-form',
       // cardsContainer.prepend(domCard);
       popupAddCard.close(); //при нажатии на кнопку "создать" закрываем попап
     })
-    .catch((err) => {
-      console.error(`Ошибка: ${err}`);
-    })
-    .finally(() => {
-      renderLoading(false, submitButton, initialText);
-    });
+      .catch((err) => {
+        console.error(`Ошибка: ${err}`);
+      })
+      .finally(() => {
+        renderLoading(false, submitButton, initialText);
+      });
   }
-  )
-  const formValidatorEditProfile = new FormValidator (validationConfig, formEditProfile);
-  formValidatorEditProfile.enableValidation();
+)
 
+newPlaceAddButton.addEventListener('click', () => popupAddCard.open());
+
+const formValidatorEditProfile = new FormValidator(validationConfig, formEditProfile);
+formValidatorEditProfile.enableValidation();
+popupAddCard.setEventListeners();
 
 // editAvatarButton.addEventListener('click', openEditAvatar);
 const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
@@ -208,15 +199,18 @@ const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
       avatar.src = profile.avatar;
       popupEditAvatar.close();
     })
-    .catch((err) => {
-      console.error(`Ошибка: ${err}`);
-    })
-    .finally(() => {
-      renderLoading(false, submitButton, initialText);
-    });
+      .catch((err) => {
+        console.error(`Ошибка: ${err}`);
+      })
+      .finally(() => {
+        renderLoading(false, submitButton, initialText);
+      });
   }
-  )
-  const formValidatorEditAvatar = new FormValidator (validationConfig, formEditAvatar);
-  formValidatorEditAvatar.enableValidation();
+)
+
+avatarEditButton.addEventListener('click', () => popupEditAvatar.open())
+const formValidatorEditAvatar = new FormValidator(validationConfig, formEditAvatar);
+formValidatorEditAvatar.enableValidation();
+popupEditAvatar.setEventListeners();
 
 

@@ -7,8 +7,8 @@ export const validationConfig = {
   errorClass: 'popup__input-item-error_active'
 };
 export const editButton = document.querySelector('.profile__edit-button');
-export const addButton = document.querySelector('.profile__add-button');
-export const editAvatarButton = document.querySelector('.profile__avatar-overlay');
+export const newPlaceAddButton = document.querySelector('.profile__add-button');
+export const avatarEditButton = document.querySelector('.profile__avatar-overlay');
 export const cardsContainer = document.querySelector('.elements'); //контейнер для всех карточек
 export const profileName = document.querySelector('.profile__name'); //имя профиля на странице
 export const profileAbout = document.querySelector('.profile__bio'); //био профиля на странице
