@@ -7,9 +7,9 @@ export const validationConfig = {
   errorClass: 'popup__input-item-error_active'
 };
 export const editButton = document.querySelector('.profile__edit-button');
-export const newPlaceAddButton = document.querySelector('.profile__add-button');
-export const avatarEditButton = document.querySelector('.profile__avatar-overlay');
-export const cardsContainer = document.querySelector('.elements'); //контейнер для всех карточек
+export const addButton = document.querySelector('.profile__add-button');
+export const editAvatarButton = document.querySelector('.profile__avatar-overlay');
+export const cardsContainer = '.elements'; //селектор контейнера для всех карточек
 export const profileName = document.querySelector('.profile__name'); //имя профиля на странице
 export const profileAbout = document.querySelector('.profile__bio'); //био профиля на странице
 export const avatar = document.querySelector('.profile__avatar');
@@ -23,15 +23,3 @@ export const renderLoading = (isLoading, button, buttonText = 'Сохранит�
     button.textContent = buttonText;
   }
 }
-
-
-//export const editingProfilePopup = document.querySelector('.popup_edit-form');
-//export const addingCardPopup = document.querySelector('.popup_add-form');
-//export const editingAvatarPopup = document.querySelector('.popup_edit-avatar');
-
-//export function hideInputError(formElement, inputElement, config) {
-//   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-//   inputElement.classList.remove(config.inputErrorClass);
-//   errorElement.classList.remove(config.errorClass);
-//   errorElement.textContent = '';
-// }

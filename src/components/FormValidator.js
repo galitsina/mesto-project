@@ -55,17 +55,16 @@ export class FormValidator {
   enableValidation() {
     const inputs = Array.from(this.formElement.querySelectorAll(this.inputSelector));
     const buttonElement = this.formElement.querySelector(this.submitButtonSelector);
-    const formValidatorThis = this; //объявляем константу для передачи в forEach, т.к this внутри теряет контекст и становится разметкой инпута
 
     this.formElement.addEventListener('reset', () => {
-      inputs.forEach((inputElement) => { formValidatorThis._hideInputError(inputElement) })
+      inputs.forEach((inputElement) => { this._hideInputError(inputElement) })
     })
 
     this._toggleButtonState(inputs, buttonElement);
-    inputs.forEach(function (inputElement) {
-      inputElement.addEventListener('input', function () {
-        formValidatorThis._checkInputValidity(inputElement);
-        formValidatorThis._toggleButtonState(inputs, buttonElement);
+    inputs.forEach((inputElement) => {
+      inputElement.addEventListener('input', () => {
+        this._checkInputValidity(inputElement);
+        this._toggleButtonState(inputs, buttonElement);
       });
     });
   }

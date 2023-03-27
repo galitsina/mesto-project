@@ -1,5 +1,18 @@
 import './pages/index.css';
-import { validationConfig, cardsContainer, profileName, profileAbout, avatar, renderLoading, editButton, addButton, editAvatarButton, formEditProfile, formAddCard, formEditAvatar } from './utils/constants.js';
+import {
+  validationConfig,
+  cardsContainer,
+  profileName,
+  profileAbout,
+  avatar,
+  renderLoading,
+  editButton,
+  addButton,
+  editAvatarButton,
+  formEditProfile,
+  formAddCard,
+  formEditAvatar
+} from './utils/constants.js';
 import { PopupWithImage } from './components/PopupWithImage';
 import { PopupWithForm } from './components/PopupWithForm';
 import { Api } from './components/Api';
@@ -7,7 +20,6 @@ import { UserInfo } from './components/UserInfo';
 import { Card } from './components/Card';
 import { Section } from './components/Section';
 import { FormValidator } from './components/FormValidator';
-import { newPlaceAddButton, avatarEditButton } from './utils/constants.js';
 
 let userId;
 
@@ -81,6 +93,8 @@ const userInfo = new UserInfo('.profile__name', '.profile__bio', () => {
     });
 })
 
+
+
 function createCard(card) {
   const newCard = new Card(card,
     '#element-template',
@@ -104,7 +118,7 @@ const cardsList = new Section({
   // генерирующий карточку, и вставляет каждую карточку методом класса Section setItem в разметку
   renderer: renderer,
 },
-  '.elements' //селектор контейнера с карточками
+  cardsContainer //селектор контейнера с карточками
 );
 
 export function loadInitialCards() {
@@ -127,7 +141,6 @@ export function loadInitialCards() {
 
 loadInitialCards();
 
-
 const popupEditProfile = new PopupWithForm('.popup_edit-form',
   (evt, inputValues) => {
     // универсально получаем кнопку сабмита из `evt`
@@ -149,28 +162,31 @@ const popupEditProfile = new PopupWithForm('.popup_edit-form',
       });
   }
 )
-editButton.addEventListener('click', () => popupEditProfile.open());
+editButton.addEventListener('click', () =>
+
+  userInfo.getUserInfo().then((user) => {
+    const popupData = {name: user.name, about: user.about}
+    popupEditProfile.open(popupData);
+  })
+  .catch((err) => {
+  console.error(`Ошибка: ${err}`);
+  })
+);
+
 const formValidatorAddCard = new FormValidator(validationConfig, formAddCard);
 formValidatorAddCard.enableValidation();
-popupEditProfile.setEventListeners()
+popupEditProfile.setEventListeners();
 
-
-
-
-// addButton.addEventListener('click', openAddCard);
 
 
 const popupAddCard = new PopupWithForm('.popup_add-form',
   (evt, inputValues) => {
     const submitButton = evt.submitter;
     const initialText = submitButton.textContent;
-    renderLoading(true, submitButton, initialText, 'Создание');
+    renderLoading(true, submitButton, initialText, 'Создание...');
     api.postCard(inputValues.title, inputValues.link).then((card) => {
       const newCard = createCard(card);
       cardsList.setItem(newCard);
-      //добавляем карточку в дерево при нажатии кнопки 'Создать', здесь нужен объект Section
-      // const domCard = createCard(card);
-      // cardsContainer.prepend(domCard);
       popupAddCard.close(); //при нажатии на кнопку "создать" закрываем попап
     })
       .catch((err) => {
@@ -181,14 +197,11 @@ const popupAddCard = new PopupWithForm('.popup_add-form',
       });
   }
 )
-
-newPlaceAddButton.addEventListener('click', () => popupAddCard.open());
-
+addButton.addEventListener('click', () => popupAddCard.open());
 const formValidatorEditProfile = new FormValidator(validationConfig, formEditProfile);
 formValidatorEditProfile.enableValidation();
 popupAddCard.setEventListeners();
 
-// editAvatarButton.addEventListener('click', openEditAvatar);
 const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
   (evt, inputValues) => {
     const submitButton = evt.submitter;
@@ -206,10 +219,7 @@ const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
       });
   }
 )
-
-avatarEditButton.addEventListener('click', () => popupEditAvatar.open())
+editAvatarButton.addEventListener('click', () => popupEditAvatar.open())
 const formValidatorEditAvatar = new FormValidator(validationConfig, formEditAvatar);
 formValidatorEditAvatar.enableValidation();
 popupEditAvatar.setEventListeners();
-
-
