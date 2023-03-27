@@ -107,19 +107,16 @@ const cardsList = new Section({
   '.elements' //селектор контейнера с карточками
 );
 
-// userInfo.getUserInfo().then((res) => console.log(res));
-
 export function loadInitialCards() {
   Promise.all([api.getCards(), userInfo.getUserInfo()])
     .then((promises) => {
-      const cardsArray = promises[0];
+      const cardsArray = promises[0].reverse();
       const userInformation = promises[1];
       userId = userInformation.id;
 
       profileName.textContent = userInformation.name;
       profileAbout.textContent = userInformation.about;
       avatar.src = userInformation.avatar;
-      console.log(cardsArray);
       cardsList.items = cardsArray;
       cardsList.renderItems();
     })
@@ -169,6 +166,8 @@ const popupAddCard = new PopupWithForm('.popup_add-form',
     const initialText = submitButton.textContent;
     renderLoading(true, submitButton, initialText, 'Создание');
     api.postCard(inputValues.title, inputValues.link).then((card) => {
+      const newCard = createCard(card);
+      cardsList.setItem(newCard);
       //добавляем карточку в дерево при нажатии кнопки 'Создать', здесь нужен объект Section
       // const domCard = createCard(card);
       // cardsContainer.prepend(domCard);

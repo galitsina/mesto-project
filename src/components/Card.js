@@ -37,13 +37,11 @@ export class Card {
     // Запишем разметку в приватное поле _element
     // Так у других элементов появится доступ к ней
     this._element = this._getElement();
-    console.log(this.userId);
-    console.log(this._ownerId);
     this._setEventListenersLike(); // добавим обработчики
     this._setEventListenersDelete();
     this._setEventListenersPopupImage();
 
-    // Добавим данные
+    // Добавим данные - картинка, название, количество лайков
     this._element.querySelector('.element__image').src = this.image;
     this._element.querySelector('.element__image').alt = this.name;
     this._element.querySelector('.element__title').textContent = this.name;
@@ -57,9 +55,6 @@ export class Card {
     if (this._ownerId !== this.userId) {
       this._element.querySelector('.element__trash-button').remove();
     }
-
-    //отрисовать количество лайков
-    this._element.querySelector('.element__like-counter').textContent = this._likes._length;
 
     // Вернём элемент в качестве результата работы метода
     return this._element;
