@@ -2,11 +2,12 @@ export class Popup {
   constructor(selector) {
     this.selector = selector;
     this.popupElement = document.querySelector(this.selector); //разметка попапа
+    this._handleEscClose = this._handleEscClose.bind(this); //привязываем постоянную ссылку на стрелочную функцию
   }
 
   open() {
     this.popupElement.classList.add('popup_opened');
-    document.addEventListener('keydown', (evt) => this._handleEscClose(evt));
+    document.addEventListener('keydown', this._handleEscClose); //передаем только ссылку на функцию
   }
 
   close() {

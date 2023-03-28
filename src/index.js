@@ -2,10 +2,7 @@ import './pages/index.css';
 import {
   validationConfig,
   cardsContainer,
-  profileName,
-  profileAbout,
   avatar,
-  renderLoading,
   editButton,
   addButton,
   editAvatarButton,
@@ -30,7 +27,6 @@ const handleCardClick = (link, name) => {
   popupWithImage.open(link, name);
 }
 
-
 export const api = new Api({
   baseUrl: 'https://nomoreparties.co/v1/plus-cohort-21',
   headers: {
@@ -39,44 +35,24 @@ export const api = new Api({
   }
 })
 
-// const apiDeleteLike = (evt, userId, domLike) => {
-//   api.deleteLike(userId)
-//     .then((res) => {
-//       domLike.textContent = res.likes.length;
-//       evt.target.classList.remove('element__like-button_active');
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     })
-// }
-
-// const apiPutLike = (card) => {
-//   api.putLike(id).then((res) => {
-//     domLike.textContent = res.likes.length;
-//     evt.target.classList.add('element__like-button_active');
-//   })
-//     .catch((err) => {
-//       console.log(err);
-//     })
-// }
 function addLike(card) {
   api.putLike(card._id)
-      .then((res) => {
-          card.addLike(res)
-      })
-      .catch((err) => {
-          console.log(err);
-      });
+    .then((res) => {
+      card.addLike(res)
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
 
 function deleteLike(card) {
   api.deleteLike(card._id)
-      .then((res) => {
-          card.deleteLike(res)
-      })
-      .catch((err) => {
-          console.log(err);
-      });
+    .then((res) => {
+      card.deleteLike(res)
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
 
 const apiDeleteCard = (evt, id) => {
@@ -89,8 +65,6 @@ const apiDeleteCard = (evt, id) => {
 }
 
 const userInfo = new UserInfo('.profile__name', '.profile__bio', '.profile__avatar');
-
-
 
 function createCard(card) {
   const newCard = new Card(card,
@@ -141,15 +115,24 @@ export function loadInitialCards() {
 
 loadInitialCards();
 
+const formValidators = {}
+// Включение валидации
+const enableValidation = (config) => {
+  const formList = Array.from(document.querySelectorAll(config.formSelector));
+  formList.forEach((formElement) => {
+    const validator = new FormValidator(config, formElement)
+    // получаем данные из атрибута `name` у формы
+    const formName = formElement.getAttribute('name')
+    // вот тут в объект записываем под именем формы
+    formValidators[formName] = validator;
+    validator.enableValidation();
+  });
+};
+enableValidation(validationConfig);
+
 const popupEditProfile = new PopupWithForm('.popup_edit-form',
   (evt, inputValues) => {
-    // универсально получаем кнопку сабмита из `evt`
-    const submitButton = evt.submitter;
-    // записываем начальный текст кнопки до вызова запроса
-    const initialText = submitButton.textContent;
-    // изменяем текст кнопки до вызова запроса
-    renderLoading(true, submitButton, initialText, 'Сохранение...');
-
+    popupEditProfile.renderLoading(true);
     userInfo.setUserInfo(inputValues.name, inputValues.about).then((user) => {
       popupEditProfile.close(); //при нажатии на кнопку "сохранить" закрываем попап
     })
@@ -158,7 +141,7 @@ const popupEditProfile = new PopupWithForm('.popup_edit-form',
       })
       // возвращаем обратно начальный текст кнопки
       .finally(() => {
-        renderLoading(false, submitButton, initialText);
+        popupEditProfile.renderLoading(false);
       });
   }
 )
@@ -172,18 +155,12 @@ editButton.addEventListener('click', () =>
       console.error(`Ошибка: ${err}`);
     })
 );
-
-const formValidatorAddCard = new FormValidator(validationConfig, formAddCard);
-formValidatorAddCard.enableValidation();
+formValidators['editprofile'].enableValidation();
 popupEditProfile.setEventListeners();
-
-
 
 const popupAddCard = new PopupWithForm('.popup_add-form',
   (evt, inputValues) => {
-    const submitButton = evt.submitter;
-    const initialText = submitButton.textContent;
-    renderLoading(true, submitButton, initialText, 'Создание...');
+    popupAddCard.renderLoading(true, 'Создание...')
     api.postCard(inputValues.title, inputValues.link).then((card) => {
       const newCard = createCard(card);
       cardsList.setItem(newCard);
@@ -193,20 +170,17 @@ const popupAddCard = new PopupWithForm('.popup_add-form',
         console.error(`Ошибка: ${err}`);
       })
       .finally(() => {
-        renderLoading(false, submitButton, initialText);
+        popupAddCard.renderLoading(false);
       });
   }
 )
 addButton.addEventListener('click', () => popupAddCard.open());
-const formValidatorEditProfile = new FormValidator(validationConfig, formEditProfile);
-formValidatorEditProfile.enableValidation();
+formValidators['addcard'].enableValidation();
 popupAddCard.setEventListeners();
 
 const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
   (evt, inputValues) => {
-    const submitButton = evt.submitter;
-    const initialText = submitButton.textContent;
-    renderLoading(true, submitButton, initialText, 'Сохранение...');
+    popupEditAvatar.renderLoading(true);
     api.editAvatar(inputValues.avatarlink).then((profile) => {
       avatar.src = profile.avatar;
       popupEditAvatar.close();
@@ -215,11 +189,10 @@ const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
         console.error(`Ошибка: ${err}`);
       })
       .finally(() => {
-        renderLoading(false, submitButton, initialText);
+        popupEditAvatar.renderLoading(false);
       });
   }
 )
 editAvatarButton.addEventListener('click', () => popupEditAvatar.open())
-const formValidatorEditAvatar = new FormValidator(validationConfig, formEditAvatar);
-formValidatorEditAvatar.enableValidation();
+formValidators['addcard'].enableValidation();
 popupEditAvatar.setEventListeners();
