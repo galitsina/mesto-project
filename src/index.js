@@ -133,9 +133,11 @@ enableValidation(validationConfig);
 const popupEditProfile = new PopupWithForm('.popup_edit-form',
   (evt, inputValues) => {
     popupEditProfile.renderLoading(true);
-    userInfo.setUserInfo(inputValues.name, inputValues.about).then((user) => {
-      popupEditProfile.close(); //при нажатии на кнопку "сохранить" закрываем попап
-    })
+    api.editProfile(inputValues.name, inputValues.about)
+      .then((user) => {
+        userInfo.setUserInfo({ name: user.name, about: user.about, avatar: user.avatar, _id: user._id });
+        popupEditProfile.close(); //при нажатии на кнопку "сохранить" закрываем попап
+      })
       .catch((err) => {
         console.error(`Ошибка: ${err}`);
       })
@@ -145,16 +147,12 @@ const popupEditProfile = new PopupWithForm('.popup_edit-form',
       });
   }
 )
-editButton.addEventListener('click', () =>
+editButton.addEventListener('click', () => {
+  const user = userInfo.getUserInfo();
+  const popupData = { name: user.name, about: user.about };
+  popupEditProfile.open(popupData);
+});
 
-  userInfo.getUserInfo().then((user) => {
-    const popupData = { name: user.name, about: user.about }
-    popupEditProfile.open(popupData);
-  })
-    .catch((err) => {
-      console.error(`Ошибка: ${err}`);
-    })
-);
 formValidators['editprofile'].enableValidation();
 popupEditProfile.setEventListeners();
 
@@ -181,8 +179,8 @@ popupAddCard.setEventListeners();
 const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
   (evt, inputValues) => {
     popupEditAvatar.renderLoading(true);
-    api.editAvatar(inputValues.avatarlink).then((profile) => {
-      avatar.src = profile.avatar;
+    api.editAvatar(inputValues.avatarlink).then((user) => {
+      userInfo.setUserInfo({ name: user.name, about: user.about, avatar: user.avatar, _id: user._id });
       popupEditAvatar.close();
     })
       .catch((err) => {

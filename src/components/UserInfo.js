@@ -12,8 +12,8 @@ export class UserInfo {
   //метод, который возвращает объект с полями текстовых значений имени и деятельности, подойдёт для вставки в форму
   getUserInfo() {
     return {
-      name: nameElement.textContent,
-      about: jobElement.textContent
+      name: this.nameElement.textContent,
+      about: this.jobElement.textContent
     }
   }
 
