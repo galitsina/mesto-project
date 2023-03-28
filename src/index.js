@@ -39,25 +39,44 @@ export const api = new Api({
   }
 })
 
-const apiDeleteLike = (evt, userId, domLike) => {
-  api.deleteLike(userId)
-    .then((res) => {
-      domLike.textContent = res.likes.length;
-      evt.target.classList.remove('element__like-button_active');
-    })
-    .catch((err) => {
-      console.log(err);
-    })
+// const apiDeleteLike = (evt, userId, domLike) => {
+//   api.deleteLike(userId)
+//     .then((res) => {
+//       domLike.textContent = res.likes.length;
+//       evt.target.classList.remove('element__like-button_active');
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     })
+// }
+
+// const apiPutLike = (card) => {
+//   api.putLike(id).then((res) => {
+//     domLike.textContent = res.likes.length;
+//     evt.target.classList.add('element__like-button_active');
+//   })
+//     .catch((err) => {
+//       console.log(err);
+//     })
+// }
+function addLike(card) {
+  api.putLike(card._id)
+      .then((res) => {
+          card.addLike(res)
+      })
+      .catch((err) => {
+          console.log(err);
+      });
 }
 
-const apiPutLike = (evt, id, domLike) => {
-  api.putLike(id).then((res) => {
-    domLike.textContent = res.likes.length;
-    evt.target.classList.add('element__like-button_active');
-  })
-    .catch((err) => {
-      console.log(err);
-    })
+function deleteLike(card) {
+  api.deleteLike(card._id)
+      .then((res) => {
+          card.deleteLike(res)
+      })
+      .catch((err) => {
+          console.log(err);
+      });
 }
 
 const apiDeleteCard = (evt, id) => {
@@ -69,40 +88,18 @@ const apiDeleteCard = (evt, id) => {
     })
 }
 
-const userInfo = new UserInfo('.profile__name', '.profile__bio', () => {
-  return api.getUserInformation()
-    .then((res) => {
-      const user = {};
-      user.name = res.name;
-      user.about = res.about;
-      user.id = res._id;
-      user.avatar = res.avatar;
-      return user;
-    })
-    .catch(err => {
-      console.log(`Ошибка: ${err}`);
-    });
-}, (name, about, nameSelector, aboutSelector) => {
-  return api.editProfile(name, about)
-    .then((res) => {
-      document.querySelector(nameSelector).textContent = res.name;
-      document.querySelector(aboutSelector).textContent = res.about;
-    })
-    .catch(err => {
-      console.log(`Ошибка: ${err}`);
-    });
-})
+const userInfo = new UserInfo('.profile__name', '.profile__bio', '.profile__avatar');
 
 
 
 function createCard(card) {
   const newCard = new Card(card,
     '#element-template',
-    apiDeleteLike,
-    apiPutLike,
+    deleteLike,
+    addLike,
     apiDeleteCard,
     handleCardClick,
-    userId
+    userInfo._id
   ).generate();
   return newCard;
 }
@@ -122,15 +119,18 @@ const cardsList = new Section({
 );
 
 export function loadInitialCards() {
-  Promise.all([api.getCards(), userInfo.getUserInfo()])
+  Promise.all([api.getCards(), api.getUserInformation()])
     .then((promises) => {
       const cardsArray = promises[0].reverse();
       const userInformation = promises[1];
-      userId = userInformation.id;
 
-      profileName.textContent = userInformation.name;
-      profileAbout.textContent = userInformation.about;
-      avatar.src = userInformation.avatar;
+      userId = userInformation.id;
+      userInfo.setUserInfo({
+        name: userInformation.name,
+        about: userInformation.about,
+        avatar: userInformation.avatar,
+        _id: userInformation._id
+      });
       cardsList.items = cardsArray;
       cardsList.renderItems();
     })
@@ -165,12 +165,12 @@ const popupEditProfile = new PopupWithForm('.popup_edit-form',
 editButton.addEventListener('click', () =>
 
   userInfo.getUserInfo().then((user) => {
-    const popupData = {name: user.name, about: user.about}
+    const popupData = { name: user.name, about: user.about }
     popupEditProfile.open(popupData);
   })
-  .catch((err) => {
-  console.error(`Ошибка: ${err}`);
-  })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`);
+    })
 );
 
 const formValidatorAddCard = new FormValidator(validationConfig, formAddCard);
