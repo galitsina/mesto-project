@@ -2,13 +2,9 @@ import './pages/index.css';
 import {
   validationConfig,
   cardsContainer,
-  avatar,
   editButton,
   addButton,
   editAvatarButton,
-  formEditProfile,
-  formAddCard,
-  formEditAvatar
 } from './utils/constants.js';
 import { PopupWithImage } from './components/PopupWithImage';
 import { PopupWithForm } from './components/PopupWithForm';
