@@ -149,7 +149,6 @@ editButton.addEventListener('click', () => {
   popupEditProfile.open(popupData);
 });
 
-formValidators['editprofile'].enableValidation();
 popupEditProfile.setEventListeners();
 
 const popupAddCard = new PopupWithForm('.popup_add-form',
@@ -169,7 +168,6 @@ const popupAddCard = new PopupWithForm('.popup_add-form',
   }
 )
 addButton.addEventListener('click', () => popupAddCard.open());
-formValidators['addcard'].enableValidation();
 popupAddCard.setEventListeners();
 
 const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
@@ -188,5 +186,4 @@ const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
   }
 )
 editAvatarButton.addEventListener('click', () => popupEditAvatar.open())
-formValidators['addcard'].enableValidation();
 popupEditAvatar.setEventListeners();
