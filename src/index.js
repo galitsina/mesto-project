@@ -95,12 +95,7 @@ export function loadInitialCards() {
       const userInformation = promises[1];
 
       userId = userInformation.id;
-      userInfo.setUserInfo({
-        name: userInformation.name,
-        about: userInformation.about,
-        avatar: userInformation.avatar,
-        _id: userInformation._id
-      });
+      userInfo.setUserInfo(userInformation);
       cardsList.items = cardsArray;
       cardsList.renderItems();
     })
@@ -131,7 +126,7 @@ const popupEditProfile = new PopupWithForm('.popup_edit-form',
     popupEditProfile.renderLoading(true);
     api.editProfile(inputValues.name, inputValues.about)
       .then((user) => {
-        userInfo.setUserInfo({ name: user.name, about: user.about, avatar: user.avatar, _id: user._id });
+        userInfo.setUserInfo(user);
         popupEditProfile.close(); //при нажатии на кнопку "сохранить" закрываем попап
       })
       .catch((err) => {
@@ -174,7 +169,7 @@ const popupEditAvatar = new PopupWithForm('.popup_edit-avatar',
   (evt, inputValues) => {
     popupEditAvatar.renderLoading(true);
     api.editAvatar(inputValues.avatarlink).then((user) => {
-      userInfo.setUserInfo({ name: user.name, about: user.about, avatar: user.avatar, _id: user._id });
+      userInfo.setUserInfo(user);
       popupEditAvatar.close();
     })
       .catch((err) => {
