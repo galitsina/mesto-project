@@ -22,5 +22,10 @@
 * Модульность кода.
 * Асинхронность.
 * Работа с API.
+* ООП.
 
 ### [Ссылка на сайт](https://galitsina.github.io/mesto-project/)
+### Проект выполнен в паре с Катковой Татьяной:
+[Почта](yndx-katkovatanya@yandex.ru),
+[Гит](https://github.com/katkovatanya)
+
