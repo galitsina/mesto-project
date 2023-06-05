@@ -1,31 +1,30 @@
 # **Mesto**
 
-## Описание проекта
-Проект "Mesto" - интерактивная веб-страница, напоминающая социальную сеть с возможностью добавить автар, информацию о себе и сделать галерею изображений с возможностью ставить лайки.
+## Project Description
 
-## На JavaScript реализовано:
-* Открытие и закрытие модальных окон.
-* В окне редактирования сохраняются и передаются данные о пользователе со страницы.
-* Окно добавления карточек позволяет пользователю загружать свои картинки.
-* Карточки можно просматривать, лайкать и удалять.
-* Разработана валидация всех форм на стороне клиента.
-* Создано инфраструктурное окружение с помощью Webpack.
-* Настроено взаимодействие с сервером.
+The "Mesto" project is an interactive web page that resembles a social network. It allows users to add an avatar, information about themselves, and create a gallery of images with the ability to like them.
 
+## Implemented in JavaScript:
+* Opening and closing modal windows.
+* User data is saved and transmitted from the edit window on the page.
+* The add cards window allows users to upload their own images.
+* Cards can be viewed, liked, and deleted.
+* Client-side validation of all forms has been implemented.
+* Infrastructure environment created using Webpack.
+* Interaction with the server is set up.
+* On the page, both user-uploaded cards and cards received from the server (uploaded by other users) are displayed. It is possible to like all the cards, but only the user's own cards can be deleted.
 
-## Изученные технологии JS в проекте:
-* Основы DOM, создание, добавление и удаление элементов.
-* Методы работы с данными, условия, циклы.
-* Массивы.
-* Объекты.
-* Функции.
-* Модульность кода.
-* Асинхронность.
-* Работа с API.
-* ООП.
+## JavaScript technologies learned in the project:
+* Basics of the Document Object Model (DOM), creating, adding, and removing elements.
+* Data manipulation methods, conditions, loops.
+* Arrays.
+* Objects.
+* Functions.
+* Code modularity.
+* Asynchronicity.
+* Working with APIs.
+* Object-Oriented Programming (OOP).
 
-### [Ссылка на сайт](https://galitsina.github.io/mesto-project/)
-### Проект выполнен в паре с Катковой Татьяной:
-[Почта](yndx-katkovatanya@yandex.ru),
-[Гит](https://github.com/katkovatanya)
+### [Website link](https://galitsina.github.io/mesto-project/)
+
 
